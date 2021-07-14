@@ -8,6 +8,10 @@ def load_dataset(identifier, source="file", download_to="datasets"):
     """
     Main function to download datasets from different sources.
 
+    Note that this function is designed to be as simple as possible, if you are missing
+    any arguments that you want to pass, you probably want to call a more specific
+    function like pandas.read_csv instead.
+
     Currently, the following values are allowed for the source parameter:
 
     - "file": loads data from a single file on the local file system
