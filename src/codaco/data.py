@@ -7,6 +7,21 @@ import pathlib
 def load_dataset(identifier, source="file", download_to="datasets"):
     """
     Main function to download datasets from different sources.
+
+    Currently, the following values are allowed for the source parameter:
+
+    - "file": loads data from a single file on the local file system
+    - "ucimlr": loads data from the UCI machine learning repository (using the ucimlr package)
+
+    Args:
+        identifier (str): unique identifier of the dataset (file name, database number, ...)
+
+    Kwargs:
+        source (str): source from which to load the data
+        download_to (str): folder where downloaded data should be stored
+
+    Returns:
+        pandas dataframe
     """
 
     if source == "file":
