@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import pathlib
+import requests
+import re
+import urllib2
 
 # TODO: function for loading ML-datasets as generators
 
@@ -47,4 +50,37 @@ def load_file(fname):
         raise "Sorry, I cannot load .{} files.".format(fname.suffix)
 
 def load_ucimlr(identifier, download_to="datasets"):
+    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/{}/".format(identifier)
+    index = requests.get(url + "Index").text
+    # Index format example
+    # 02 Dec 1996      139 Index
+    # 02 Mar 1993    11903 glass.data
+    # 16 Jul 1992      780 glass.tag
+    # 30 May 1989     3506 glass.names
+    files = re.findall(r"\d+\s\w+\s\d+\s+\d+\s+(.*)", index)
+    outdir = pathlib.Path(download_to)
+    outdir.mkdir(parents=True, exist_ok=True)
+    for f in files:
+        if f == "Index":
+            continue
+        outfile = outdir.joinpath(f)
+        if not outfile.exists():
+            download_file(url + f, outfile)
+    namefile = "{}.name".format(identifier)
+    columns = guess_ucimlr_columns(namefile)
+    datafile = "{}.data".format(identifier)
+    if datafile in files:
+        return pd.read_csv(datafile, names=columns)
+    else:
+        raise "Could not find file named {}.data, I do not know how to load this dataset. :("
+
+def guess_ucimlr_columns(namefile):
     pass
+
+def download_file(url, path):
+    with requests.get(url, stream=True) as r:
+        # raise error if HTTP error code was returned
+        r.raise_for_status()
+        with path.open(mode="wb") as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                f.write(chunk)
