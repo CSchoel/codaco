@@ -65,9 +65,9 @@ def load_ucimlr(identifier, download_to="datasets"):
         outfile = outdir.joinpath(f)
         if not outfile.exists():
             download_file(url + f, outfile)
-    namefile = "{}.name".format(identifier)
+    namefile = outdir.joinpath("{}.name".format(identifier))
     columns = guess_ucimlr_columns(namefile)
-    datafile = "{}.data".format(identifier)
+    datafile = outdir.joinpath("{}.data".format(identifier))
     if datafile in files:
         return pd.read_csv(datafile, names=columns)
     else:
