@@ -24,4 +24,7 @@ class TestUCImlr(unittest.TestCase):
             idfile.write_text("\n".join(ids), encoding="utf-8")
         for i in ids:
             print(i)
-            data = cd.load_dataset(i, source="ucimlr")
+            try:
+                data = cd.load_dataset(i, source="ucimlr")
+            except Exception as e:
+                print(e)
