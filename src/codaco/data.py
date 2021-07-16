@@ -3,7 +3,6 @@ import numpy as np
 import pathlib
 import requests
 import re
-import urllib2
 
 # TODO: function for loading ML-datasets as generators
 
