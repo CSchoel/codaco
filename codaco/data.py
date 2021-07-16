@@ -68,10 +68,10 @@ def load_ucimlr(identifier, download_to="datasets"):
     namefile = outdir.joinpath("{}.names".format(identifier))
     columns = guess_ucimlr_columns(namefile)
     datafile = outdir.joinpath("{}.data".format(identifier))
-    if datafile in files:
+    if datafile.name in files:
         return pd.read_csv(datafile, names=columns)
     else:
-        raise "Could not find file named {}.data, I do not know how to load this dataset. :("
+        raise "Could not find file named {}, I do not know how to load this dataset. :(".format(datafile.name)
 
 def guess_ucimlr_columns(namefile):
     text = namefile.read_text(encoding="utf-8")
