@@ -10,7 +10,7 @@ class TestUCImlr(unittest.TestCase):
         names = re.findall(r'<a href="datasets\/(.*)"><img ', datasets)
         idfile = pathlib.Path("datasets/ucimlr.ids")
         if idfile.exists():
-            ids = idfile.read_text(encoding="utf-8")
+            ids = idfile.read_text(encoding="utf-8").splitlines()
         else:
             ids = [
                 re.search(
