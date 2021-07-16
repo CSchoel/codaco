@@ -1,0 +1,4 @@
+# Python build directories
+
+dist
+codaco.egg-info
