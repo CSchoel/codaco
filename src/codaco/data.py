@@ -17,7 +17,7 @@ def load_dataset(identifier, source="file", download_to="datasets"):
     Currently, the following values are allowed for the source parameter:
 
     - "file": loads data from a single file on the local file system
-    - "ucimlr": loads data from the UCI machine learning repository (using the ucimlr package)
+    - "ucimlr": loads data from the UCI machine learning repository
 
     Args:
         identifier (str): unique identifier of the dataset (file name, database number, ...)
