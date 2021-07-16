@@ -2,3 +2,8 @@
 
 dist
 codaco.egg-info
+__pycache__
+
+# Default folder for downloading datasets
+
+datasets
