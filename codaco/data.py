@@ -57,7 +57,7 @@ def load_ucimlr(identifier, download_to="datasets"):
     # 16 Jul 1992      780 glass.tag
     # 30 May 1989     3506 glass.names
     files = re.findall(r"\d+\s\w+\s\d+\s+\d+\s+(.*)", index)
-    outdir = pathlib.Path(download_to)
+    outdir = pathlib.Path(download_to).joinpath(identifier)
     outdir.mkdir(parents=True, exist_ok=True)
     for f in files:
         if f == "Index":
