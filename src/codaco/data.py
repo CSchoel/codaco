@@ -74,7 +74,8 @@ def load_ucimlr(identifier, download_to="datasets"):
         raise "Could not find file named {}.data, I do not know how to load this dataset. :("
 
 def guess_ucimlr_columns(namefile):
-    pass
+    text = namefile.read_text(encoding="utf-8")
+    return None
 
 def download_file(url, path):
     with requests.get(url, stream=True) as r:
