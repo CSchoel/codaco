@@ -55,7 +55,7 @@ def load_ucimlr(identifier, download_to="datasets"):
     url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
     refs = re.findall(r"href=\"(.+?)\"", requests.get(url).text)
     print(refs)
-    refs = [x for x in refs if x not in ["/ml/machine-learning-databases/", "Index"]]
+    refs = [x for x in refs if not x.startswith('/') and x not in ["Index"]]
     outdir = pathlib.Path(download_to).joinpath(identifier)
     outdir.mkdir(parents=True, exist_ok=True)
     for f in refs:
