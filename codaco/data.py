@@ -54,7 +54,8 @@ def load_ucimlr(identifier, download_to="datasets"):
         "artificial-characters",
         "audiology",
         "chess/king-rook-vs-king-knight",
-        "chess/domain-theories"
+        "chess/domain-theories",
+        "chorales"
     ]
     if identifier in exclude:
         return None
