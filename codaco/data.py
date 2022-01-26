@@ -74,7 +74,11 @@ def load_ucimlr(identifier, download_to="datasets"):
         "audiology",
         "chess/king-rook-vs-king-knight",
         "chess/domain-theories",
-        "chorales"
+        "chorales",
+        "diabetes",
+        "dgp-2",
+        "document-understanding",
+        "ebl"
     ]
     if identifier in exclude:
         return None
