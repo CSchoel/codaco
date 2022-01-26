@@ -50,17 +50,13 @@ def load_file(fname):
         raise "Sorry, I cannot load .{} files.".format(fname.suffix)
 
 def load_ucimlr(identifier, download_to="datasets"):
-    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/{}/".format(identifier)
-    index = requests.get(url + "Index").text
-    # Index format example
-    # 02 Dec 1996      139 Index
-    # 02 Mar 1993    11903 glass.data
-    # 16 Jul 1992      780 glass.tag
-    # 30 May 1989     3506 glass.names
-    files = re.findall(r"\d+\s\w+\s\d+\s+\d+\s+(.*)", index)
+    url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
+    refs = re.findall(r"href=\"(.+?)\"", requests.get(url).text)
+    print(refs)
+    refs = [x for x in refs if x not in ["/ml/machine-learning-databases/", "Index"]]
     outdir = pathlib.Path(download_to).joinpath(identifier)
     outdir.mkdir(parents=True, exist_ok=True)
-    for f in files:
+    for f in refs:
         if f == "Index":
             continue
         outfile = outdir.joinpath(f)
