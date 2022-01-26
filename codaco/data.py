@@ -78,7 +78,12 @@ def load_ucimlr(identifier, download_to="datasets"):
         "diabetes",
         "dgp-2",
         "document-understanding",
-        "ebl"
+        "ebl",
+        "heart-disease",
+        "function-finding",
+        "icu",
+        "image", # needs advanced CSV handling
+        "internet_ads" # should work with encoding_errors = 'backslashreplace'
     ]
     if identifier in exclude:
         return None
