@@ -4,6 +4,8 @@ import pathlib
 import requests
 import re
 import warnings
+import shutil
+import subprocess
 
 # TODO: function for loading ML-datasets as generators
 
@@ -49,6 +51,18 @@ def load_file(fname):
     else:
         raise "Sorry, I cannot load .{} files.".format(fname.suffix)
 
+
+def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
+    # extract zip files
+    try:
+        shutil.unpack_archive(filepath, outdir)
+        filepath.unlink()
+    except shutil.ReadError as e:
+        pass
+    ret = subprocess.run(["uncompress", str(filepath.absolute())], cwd=outdir, capture_output=True)
+    print(ret)
+
+
 def load_ucimlr(identifier, download_to="datasets"):
     exclude = [
         "artificial-characters",
@@ -71,6 +85,11 @@ def load_ucimlr(identifier, download_to="datasets"):
         outfile = outdir.joinpath(f)
         if not outfile.exists():
             download_file(url + f, outfile)
+            print(outfile.suffix)
+            if outfile.suffix == '.Z':
+                # extract zip files
+                extract_zip(outfile, outdir)
+
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
     datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes]
     if len(datafiles) == 0:
