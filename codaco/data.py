@@ -35,7 +35,7 @@ def load_dataset(identifier, source="file", download_to="datasets"):
     elif source == "ucimlr":
         return load_ucimlr(identifier, download_to=download_to)
     else:
-        raise "Unknown dataset source: {}".format(source)
+        raise IOError("Unknown dataset source: {}".format(source))
 
 
 def load_file(fname):
@@ -71,7 +71,7 @@ def load_ucimlr(identifier, download_to="datasets"):
     if datafile.name in files:
         return pd.read_csv(datafile, names=columns)
     else:
-        raise "Could not find file named {}, I do not know how to load this dataset. :(".format(datafile.name)
+        raise IOError("Could not find file named {}, I do not know how to load this dataset. :(".format(datafile.name))
 
 def guess_ucimlr_columns(namefile):
     if not namefile.exists():
