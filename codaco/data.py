@@ -50,7 +50,13 @@ def load_file(fname):
         raise "Sorry, I cannot load .{} files.".format(fname.suffix)
 
 def load_ucimlr(identifier, download_to="datasets"):
-    if identifier in ["artificial-characters", "audiology"]:
+    exclude = [
+        "artificial-characters",
+        "audiology",
+        "chess/king-rook-vs-king-knight",
+        "chess/domain-theories"
+    ]
+    if identifier in exclude:
         return None
     url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
     refs = re.findall(r"href=\"(.+?)\"", requests.get(url).text)
