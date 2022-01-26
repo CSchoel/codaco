@@ -3,6 +3,7 @@ import numpy as np
 import pathlib
 import requests
 import re
+import warnings
 
 # TODO: function for loading ML-datasets as generators
 
@@ -65,13 +66,14 @@ def load_ucimlr(identifier, download_to="datasets"):
         outfile = outdir.joinpath(f)
         if not outfile.exists():
             download_file(url + f, outfile)
-    namefile = next(x for x in outdir.iterdir() if x.suffix == ".names")
-    columns = guess_ucimlr_columns(namefile)
-    datafile = next(x for x in outdir.iterdir() if x.suffix == ".data")
-    if datafile.name in files:
-        return pd.read_csv(datafile, names=columns)
-    else:
-        raise IOError("Could not find file named {}, I do not know how to load this dataset. :(".format(datafile.name))
+    namefiles = [x for x in outdir.iterdir() if x.suffix == ".names"]
+    datafiles = [x for x in outdir.iterdir() if x.suffix == ".data"]
+    if len(datafiles) == 0:
+        raise IOError(f"Could not find data file for UCIMLR database {identifier}, I do not know how to load this dataset. :(")
+    elif len(datafiles) > 1:
+        warnings.warn(f"Found multiple datafiles for UCIMLR database {identifier}: {datafiles}")
+    columns = None if len(namefiles) == 0 else guess_ucimlr_columns(namefiles[0])
+    return pd.read_csv(datafiles[0], names=columns)
 
 def guess_ucimlr_columns(namefile):
     if not namefile.exists():
