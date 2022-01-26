@@ -85,8 +85,7 @@ def load_ucimlr(identifier, download_to="datasets"):
         outfile = outdir.joinpath(f)
         if not outfile.exists():
             download_file(url + f, outfile)
-            print(outfile.suffix)
-            if outfile.suffix == '.Z':
+            if outfile.suffix == '.Z' and not (outdir / outfile.stem).exists():
                 # extract zip files
                 extract_zip(outfile, outdir)
 
