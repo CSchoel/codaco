@@ -53,6 +53,7 @@ def load_file(fname):
 
 
 def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
+    known = list(outdir.iterdir())
     # extract zip files
     try:
         shutil.unpack_archive(filepath, outdir)
@@ -60,7 +61,11 @@ def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
     except shutil.ReadError as e:
         pass
     ret = subprocess.run(["uncompress", str(filepath.absolute())], cwd=outdir, capture_output=True)
-    print(ret)
+    if ret.returncode != 0:
+        raise IOError(f"could not extract {filepath.absolute()}")
+    # check if extracted files need to be extracted again
+    for f in (x for x in outdir.iterdir() if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
+        extract_zip(f, outdir)
 
 
 def load_ucimlr(identifier, download_to="datasets"):
