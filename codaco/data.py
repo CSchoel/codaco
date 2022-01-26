@@ -105,7 +105,7 @@ def load_ucimlr(identifier, download_to="datasets"):
     elif len(datafiles) > 1:
         warnings.warn(f"Found multiple datafiles for UCIMLR database {identifier}: {datafiles}")
     columns = None if len(namefiles) == 0 else guess_ucimlr_columns(namefiles[0])
-    return pd.read_csv(datafiles[0], names=columns)
+    return pd.read_csv(datafiles[0], names=columns, on_bad_lines="warn")
 
 def guess_ucimlr_columns(namefile):
     if not namefile.exists():
