@@ -64,8 +64,8 @@ def load_ucimlr(identifier, download_to="datasets"):
         outfile = outdir.joinpath(f)
         if not outfile.exists():
             download_file(url + f, outfile)
-    namefiles = [x for x in outdir.iterdir() if x.suffix == ".names"]
-    datafiles = [x for x in outdir.iterdir() if x.suffix == ".data"]
+    namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
+    datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes]
     if len(datafiles) == 0:
         raise IOError(f"Could not find data file for UCIMLR database {identifier}, I do not know how to load this dataset. :(")
     elif len(datafiles) > 1:
