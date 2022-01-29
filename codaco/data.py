@@ -67,7 +67,7 @@ def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
         extract_zip(f, outdir)
 
 
-def load_ucimlr(identifier, download_to="datasets", force=False):
+def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
     exclude = [
         "artificial-characters",
         "audiology",
@@ -106,13 +106,24 @@ def load_ucimlr(identifier, download_to="datasets", force=False):
                 extract_zip(outfile, outdir)
 
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
-    datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes]
-    if len(datafiles) == 0:
-        raise IOError(f"Could not find data file for UCIMLR database {identifier}, I do not know how to load this dataset. :(")
+    datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes and x.name.startswith(variant)]
+    trainfiles = [x for x in outdir.iterdir() if ".train" in x.suffixes and x.name.startswith(variant)]
+    if len(datafiles) == 0 and len(trainfiles) == 0:
+        raise IOError(f"Could not find data or train file for UCIMLR database {identifier}, I do not know how to load this dataset. :(")
     elif len(datafiles) > 1:
         warnings.warn(f"Found multiple datafiles for UCIMLR database {identifier}: {datafiles}")
+    elif len(trainfiles) > 1:
+        warnings.warn(f"Found multiple training files for UCIMLR database {identifier}: {trainfiles}")
     columns = None if len(namefiles) == 0 else guess_ucimlr_columns(namefiles[0])
-    return pd.read_csv(datafiles[0], names=columns, on_bad_lines="warn", encoding_errors="backslashreplace")
+    if len(datafiles) > 0:
+        return pd.read_csv(datafiles[0], names=columns, on_bad_lines="warn", encoding_errors="backslashreplace")
+    else:
+        # load training and test file
+        trainfile = trainfiles[0]
+        testfile = trainfile.parent / (trainfile.stem + ".test")
+        if not testfile.exists():
+            raise IOError(f"Could not find corresponding test file {testfile} for training gile {trainfile}")
+        return [pd.read_csv(x, names=columns, on_bad_lines="warn", encoding_errors="backslashreplace") for x in [trainfile, testfile]]
 
 def guess_ucimlr_columns(namefile):
     if not namefile.exists():
