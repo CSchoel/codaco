@@ -85,6 +85,7 @@ def load_ucimlr(identifier, download_to="datasets", force=False):
         "internet_ads", # should work with encoding_errors = 'backslashreplace'
         "led-display-creator", # c code
         "logic-theorist", # includes code, requires recursive download
+        "mechanical-analysis", # requires recursive download
     ]
     if identifier in exclude:
         return None
