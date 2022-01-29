@@ -111,6 +111,27 @@ def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
         "internet_usage-mld", # .dat instead of .data
         "20newsgroups-mld", # text corpus in subfolders
         "ipums-mld", # custom name for data files
+        "kddcup98-mld", # requires recursive download
+        "tb-mld", # perl code
+        "movies-mld", # requires recursive download
+        "msnbc-mld", # special data format
+        "nsfabs-mld", # text data in many subfolders
+        "reuters21578-mld", # text data
+        "SyskillWebert-mld", # text data in many subfolders
+        "UNIX_user_data-mld", # text data in subfolders
+        "volcanoes-mld", # complex data format in many subfolders
+        "statlog/australian", # .dat instead of .data
+        "statlog/heart", # .dat instead of .data
+        "statlog/satimage", # .trn/tst instead of .train/test
+        "statlog/segment", # .dat instead of .data
+        "statlog/shuttle", # .trn/tst instead of .train/test
+        "statlog/vehicle", # .dat instead of .data
+        "undocumented/connectionist-bench/sonar", # -data instead of .data
+        "undocumented/pazzani", # just a single file with lisp code
+        "undocumented/taylor", # requires advanced CSV handling
+        "undocumented/sigillito", # sequential data
+        "uji-penchars/version1", # subfolders
+        "forest-fires", # .csv instead of .data
     ]
     if identifier in exclude:
         return None
