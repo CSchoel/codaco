@@ -102,13 +102,15 @@ def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
         "auslan2-mld", # data in many subfolders
         "census1990-mld", # works, but is quite large (360 MB text files)
         "CorelFeatures-mld", # .asc instead of .data
-        "ecoli", # perl code
+        "ecoli-mld", # perl code
         "eeg-mld", # data in many subfolders
         "faces-mld", # image data in many subfolders
         "tic-mld", # custom name for data files
         "entree-mld", # data in many subfolders
         "el_nino-mld", # .dat instead of .data
         "internet_usage-mld", # .dat instead of .data
+        "20newsgroups-mld", # text corpus in subfolders
+        "ipums-mld", # custom name for data files
     ]
     if identifier in exclude:
         return None
