@@ -59,11 +59,10 @@ def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
         shutil.unpack_archive(filepath, outdir)
         filepath.unlink()
     except shutil.ReadError as e:
-        pass
-    ret = subprocess.run(["uncompress", "-f", str(filepath.absolute())], cwd=outdir, capture_output=True)
-    if ret.returncode != 0:
-        raise IOError(f"could not extract {filepath.absolute()}")
-    # check if extracted files need to be extracted again
+        ret = subprocess.run(["uncompress", "-f", str(filepath.absolute())], cwd=outdir, capture_output=True)
+        if ret.returncode != 0:
+            raise IOError(f"could not extract {filepath.absolute()}")
+        # check if extracted files need to be extracted again
     for f in (x for x in outdir.iterdir() if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
         extract_zip(f, outdir)
 
