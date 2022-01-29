@@ -68,7 +68,7 @@ def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
         extract_zip(f, outdir)
 
 
-def load_ucimlr(identifier, download_to="datasets"):
+def load_ucimlr(identifier, download_to="datasets", force=False):
     exclude = [
         "artificial-characters",
         "audiology",
@@ -87,17 +87,17 @@ def load_ucimlr(identifier, download_to="datasets"):
     ]
     if identifier in exclude:
         return None
-    url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
-    refs = re.findall(r"href=\"(.+?)\"", requests.get(url).text)
-    refs = [x for x in refs if not x.startswith('/') and x not in ["Index"]]
-    print(refs)
     outdir = pathlib.Path(download_to).joinpath(identifier)
-    outdir.mkdir(parents=True, exist_ok=True)
-    for f in refs:
-        if f == "Index":
-            continue
-        outfile = outdir.joinpath(f)
-        if not outfile.exists():
+    if not outdir.exists() or force:
+        url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
+        refs = re.findall(r"href=\"(.+?)\"", requests.get(url).text)
+        refs = [x for x in refs if not x.startswith('/') and x not in ["Index"]]
+        print(refs)
+        outdir.mkdir(parents=True, exist_ok=True)
+        for f in refs:
+            if f == "Index":
+                continue
+            outfile = outdir.joinpath(f)
             download_file(url + f, outfile)
             if outfile.suffix == '.Z':
                 # extract zip files
