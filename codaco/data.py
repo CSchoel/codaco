@@ -88,6 +88,27 @@ def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
         "mechanical-analysis", # requires recursive download
         "mobile-robots", # not a tabular format
         "molecular-biology/protein-secondary-structure", # sequential data
+        "mfeat", # data file names have no suffix
+        "othello", # some logical code instead of data
+        "optdigits", # .tes/.tra instead of .test/.train
+        "pendigits", # .tes/.tra instead of .test/.train
+        "qsar", # tar file with no suffix
+        "quadrapeds", # c code
+        "solar-flare", # .data1/.data2 instead of .data
+        "statlog", # requires recursive download
+        "student-loan", # perl code
+        "undocumented", # requires recursive download
+        "auslan-mld", # data in many subfolders
+        "auslan2-mld", # data in many subfolders
+        "census1990-mld", # works, but is quite large (360 MB text files)
+        "CorelFeatures-mld", # .asc instead of .data
+        "ecoli", # perl code
+        "eeg-mld", # data in many subfolders
+        "faces-mld", # image data in many subfolders
+        "tic-mld", # custom name for data files
+        "entree-mld", # data in many subfolders
+        "el_nino-mld", # .dat instead of .data
+        "internet_usage-mld", # .dat instead of .data
     ]
     if identifier in exclude:
         return None
