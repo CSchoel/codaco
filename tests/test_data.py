@@ -6,9 +6,11 @@ import pathlib
 
 class TestUCImlr(unittest.TestCase):
     def test_guess_ucimlr_columns(self):
+        outdir = pathlib.Path("~/temp/codaco").expanduser()
+        outdir.mkdir(exist_ok=True, parents=True)
         datasets = requests.get("https://archive.ics.uci.edu/ml/datasets.php").text
         names = re.findall(r'<a href="datasets\/(.*)"><img ', datasets)
-        idfile = pathlib.Path("datasets/ucimlr.ids")
+        idfile = outdir.joinpath("ucimlr.ids")
         if idfile.exists():
             ids = idfile.read_text(encoding="utf-8").splitlines()
         else:
