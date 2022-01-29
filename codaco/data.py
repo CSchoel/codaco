@@ -175,7 +175,10 @@ def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
 def guess_ucimlr_columns(namefile):
     if not namefile.exists():
         return None
-    text = namefile.read_text(encoding="utf-8")
+    try:
+        text = namefile.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        text = namefile.read_text(encoding="latin-1")
     return None
 
 def download_file(url, path):
