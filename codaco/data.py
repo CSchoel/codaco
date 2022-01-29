@@ -108,7 +108,8 @@ def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
                 extract_zip(outfile, outdir)
 
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
-    datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes and x.name.startswith(variant)]
+    # exclude .data.html files
+    datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes and x.name.startswith(variant) and not x.suffix == ".html"]
     trainfiles = [x for x in outdir.iterdir() if ".train" in x.suffixes and x.name.startswith(variant)]
     if len(datafiles) == 0 and len(trainfiles) == 0:
         raise IOError(f"Could not find data or train file for UCIMLR database {identifier}, I do not know how to load this dataset. :(")
