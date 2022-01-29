@@ -24,9 +24,13 @@ class TestUCImlr(unittest.TestCase):
             # get id where match was successful
             ids = [x.group(1) for x in ids if x is not None]
             idfile.write_text("\n".join(ids), encoding="utf-8")
+        exceptional = []
         for i in ids:
             print(i)
+            data = cd.load_dataset(i, source="ucimlr", download_to=outdir)
             try:
-                data = cd.load_dataset(i, source="ucimlr")
+                data = cd.load_dataset(i, source="ucimlr", download_to=outdir)
             except Exception as e:
-                print(e)
+                print(f"ERROR on dataset {i}: {e}")
+                exceptional.append(i)
+        print(f"Exceptional IDs: {exceptional}")
