@@ -86,6 +86,8 @@ def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
         "led-display-creator", # c code
         "logic-theorist", # includes code, requires recursive download
         "mechanical-analysis", # requires recursive download
+        "mobile-robots", # not a tabular format
+        "molecular-biology/protein-secondary-structure", # sequential data
     ]
     if identifier in exclude:
         return None
