@@ -83,7 +83,9 @@ def load_ucimlr(identifier, download_to="datasets", force=False):
         "function-finding",
         "icu",
         "image", # needs advanced CSV handling
-        "internet_ads" # should work with encoding_errors = 'backslashreplace'
+        "internet_ads", # should work with encoding_errors = 'backslashreplace'
+        "led-display-creator", # c code
+        "logic-theorist", # includes code, requires recursive download
     ]
     if identifier in exclude:
         return None
