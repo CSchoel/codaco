@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
-import pathlib
+from pathlib import Path
 import requests
+from urllib.parse import urlparse, ParseResult, urljoin
 import re
 import warnings
 import shutil
 import subprocess
+from typing import *
 
 # TODO: function for loading ML-datasets as generators
 
@@ -34,7 +36,7 @@ def load_dataset(identifier, source="file", download_to="datasets"):
     """
 
     if source == "file":
-        return load_file(pathlib.Path(identifier))
+        return load_file(Path(identifier))
     elif source == "ucimlr":
         return load_ucimlr(identifier, download_to=download_to)
     else:
@@ -52,7 +54,7 @@ def load_file(fname):
         raise "Sorry, I cannot load .{} files.".format(fname.suffix)
 
 
-def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
+def extract_zip(filepath: Path, outdir: Path):
     known = list(outdir.iterdir())
     # extract zip files
     try:
@@ -66,91 +68,47 @@ def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
     for f in (x for x in outdir.iterdir() if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
         extract_zip(f, outdir)
 
-
-def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
-    exclude = [
-        "artificial-characters", # multiple files
-        "audiology", # special data format
-        "chess/king-rook-vs-king-knight", # lisp code
-        "chess/domain-theories", # domain theory code
-        "chorales", # lisp code
-        "diabetes", # multiple data files
-        "dgp-2", # c code
-        "document-understanding", # lisp code
-        "ebl", # domain theory code
-        "heart-disease", # special data format (CSV but multiple lines are one dataset)
-        "function-finding", # text and data alternate
-        "icu", # -Data instead of .data
-        "image", # needs advanced CSV handling                                                   ****
-        "internet_ads", # should work with encoding_errors = 'backslashreplace'
-        "led-display-creator", # c code
-        "logic-theorist", # includes code, requires recursive download
-        "mechanical-analysis", # requires recursive download
-        "mobile-robots", # not a tabular format
-        "molecular-biology/protein-secondary-structure", # sequential data
-        "mfeat", # data file names have no suffix
-        "othello", # some logical code instead of data
-        "optdigits", # .tes/.tra instead of .test/.train
-        "pendigits", # .tes/.tra instead of .test/.train
-        "qsar", # tar file with no suffix
-        "quadrapeds", # c code
-        "solar-flare", # .data1/.data2 instead of .data
-        "statlog", # requires recursive download
-        "student-loan", # perl code
-        "undocumented", # requires recursive download
-        "auslan-mld", # data in many subfolders
-        "auslan2-mld", # data in many subfolders
-        "census1990-mld", # works, but is quite large (360 MB text files)
-        "CorelFeatures-mld", # .asc instead of .data
-        "ecoli-mld", # perl code
-        "eeg-mld", # data in many subfolders
-        "faces-mld", # image data in many subfolders
-        "tic-mld", # custom name for data files
-        "entree-mld", # data in many subfolders
-        "el_nino-mld", # .dat instead of .data
-        "internet_usage-mld", # .dat instead of .data
-        "20newsgroups-mld", # text corpus in subfolders
-        "ipums-mld", # custom name for data files
-        "kddcup98-mld", # requires recursive download
-        "tb-mld", # perl code
-        "movies-mld", # requires recursive download
-        "msnbc-mld", # special data format
-        "nsfabs-mld", # text data in many subfolders
-        "reuters21578-mld", # text data
-        "SyskillWebert-mld", # text data in many subfolders
-        "UNIX_user_data-mld", # text data in subfolders
-        "volcanoes-mld", # complex data format in many subfolders
-        "statlog/australian", # .dat instead of .data
-        "statlog/heart", # .dat instead of .data
-        "statlog/satimage", # .trn/tst instead of .train/test
-        "statlog/segment", # .dat instead of .data
-        "statlog/shuttle", # .trn/tst instead of .train/test
-        "statlog/vehicle", # .dat instead of .data
-        "undocumented/connectionist-bench/sonar", # -data instead of .data
-        "undocumented/pazzani", # just a single file with lisp code
-        "undocumented/taylor", # requires advanced CSV handling
-        "undocumented/sigillito", # sequential data
-        "uji-penchars/version1", # subfolders
-        "forest-fires", # .csv instead of .data
-    ]
-    if identifier in exclude:
-        return None
-    outdir = pathlib.Path(download_to).joinpath(identifier)
-    if not outdir.exists() or force:
-        url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
-        refs = re.findall(r"href=\"(.+?)\"", requests.get(url).text)
-        refs = [x for x in refs if not x.startswith('/') and x not in ["Index"]]
-        print(refs)
-        outdir.mkdir(parents=True, exist_ok=True)
-        for f in refs:
-            if f == "Index":
+def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html: bool=True) -> List[Path]:
+    outdir.mkdir(exist_ok=True, parents=True)
+    fname = outdir / Path(urlparse(url).path).name
+    if fname.exists():
+        return []
+    downloaded = []
+    req = requests.get(url)
+    if "HTTP" in req.headers['content-type']:
+        # download recursive
+        text = req.text
+        refs = re.findall(r"href=\"(.+?)\"", text)
+        for r in refs:
+            refurl = urljoin(url, r)
+            if url.startswith(refurl) and not parents:
                 continue
-            outfile = outdir.joinpath(f)
-            download_file(url + f, outfile)
-            if outfile.suffix in ['.Z', '.gz', '.zip', '.Z', '.tar', '.bz2']:
-                # extract zip files
-                extract_zip(outfile, outdir)
+            downloaded += download_recursive(
+                refurl,
+                outdir / Path(urlparse(refurl).path).parent.relative_to(urlparse(url).path),
+                parents=parents,
+                exclude_html=exclude_html
+            )
+        if exclude_html:
+            return downloaded
+    # no html file -> simply download this file
+    with fname.open(mode="wb") as f:
+        for chunk in req.iter_content(chunk_size=1024):
+            f.write(chunk)
+        return downloaded + [fname]
 
+def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overwrite: bool=False) -> bool:
+    outdir = Path(outdir).joinpath(identifier)
+    if outdir.exists():
+        return False
+    url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
+    downloaded = download_recursive(url, outdir)
+    for outfile in downloaded:
+        if outfile.suffix in ['.Z', '.gz', '.zip', '.Z', '.tar', '.bz2']:
+            # extract zip files
+            extract_zip(outfile, outdir)
+
+def load_csv_data(datadir: Path):
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
     # exclude .data.html files
     datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes and x.name.startswith(variant) and not x.suffix == ".html"]
@@ -180,6 +138,9 @@ def guess_ucimlr_columns(namefile):
     except UnicodeDecodeError:
         text = namefile.read_text(encoding="latin-1")
     return None
+
+import csv
+csv.Sniffer()
 
 def download_file(url, path):
     with requests.get(url, stream=True) as r:
