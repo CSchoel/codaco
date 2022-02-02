@@ -89,6 +89,7 @@ def download_recursive(
         return []
     visited.add(url)
     if base_path is None:
+        # NOTE: this is sensitive to slashes at the end of the URL
         base_path = path
     if parents:
         # if we may traverse up until the root, we need to have subdirectories
