@@ -185,7 +185,7 @@ def find_table_block(text: str, tabsize: int=4):
         lastline = colcount
     print(found)
     best = max(found, key=lambda x: x[1], default=(0, 0))
-    if best[1] < 14:
+    if best[1] < 20:
         return False
     return best
 
