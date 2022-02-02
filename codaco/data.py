@@ -55,8 +55,16 @@ def load_file(fname):
         raise "Sorry, I cannot load .{} files.".format(fname.suffix)
 
 
-def extract_zip(filepath: Path, outdir: Path):
-    known = list(outdir.iterdir())
+def walk(path: Path) -> List[Path]:
+    for p in path.iterdir():
+        if p.is_file():
+            yield p
+        else:
+            walk(p)
+
+def extract_recursive(filepath: Path, outdir: Path):
+    known = list(walk(outdir))
+    print(f"extracting {filepath}")
     # extract zip files
     try:
         shutil.unpack_archive(filepath, outdir)
@@ -66,8 +74,8 @@ def extract_zip(filepath: Path, outdir: Path):
         if ret.returncode != 0:
             raise IOError(f"could not extract {filepath.absolute()}")
         # check if extracted files need to be extracted again
-    for f in (x for x in outdir.iterdir() if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
-        extract_zip(f, outdir)
+    for f in (x for x in walk(outdir) if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
+        extract_recursive(f, outdir)
 
 def download_recursive(
         url: str, outdir: Path, parents: bool=False, exclude_html: bool=True,
