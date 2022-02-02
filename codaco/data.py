@@ -159,7 +159,7 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
         if not success:
             success = find_table_block(text, tabsize=4)
         if not success:
-            success = find_table_block(text, tabsize=6)
+            success = find_table_block(text, tabsize=8)
     else:
         success = find_table_block(text)
     return success
