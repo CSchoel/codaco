@@ -172,6 +172,12 @@ def find_table_block(text: str, tabsize: int=4):
     maxline = ({}, 0)
     for i, l in enumerate(text.splitlines()):
         colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
+        # remove leading indices, because those can stem from indentation
+        print(i, colcount)
+        j = 0
+        while j in colcount:
+            del colcount[j]
+            j += 1
         colsum = sum(colcount.values())
         if colsum > maxline[1]:
             maxline = (i, colsum)
