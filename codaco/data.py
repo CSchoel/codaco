@@ -69,9 +69,17 @@ def extract_zip(filepath: Path, outdir: Path):
     for f in (x for x in outdir.iterdir() if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
         extract_zip(f, outdir)
 
-def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html: bool=True, overwrite: bool=False, base_path: Path=None, leave_site=False) -> List[Path]:
+def download_recursive(
+        url: str, outdir: Path, parents: bool=False, exclude_html: bool=True,
+        overwrite: bool=False, base_path: Path=None, leave_site=False,
+        visited: Set[str]=None) -> List[Path]:
     parsed = urlparse(url)
     path = Path(parsed.path)
+    if visited is None:
+        visited = set()
+    if url in visited:
+        return []
+    visited.add(url)
     if base_path is None:
         base_path = path
     if parents:
@@ -105,7 +113,10 @@ def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html
                 outdir,
                 parents=parents,
                 exclude_html=exclude_html,
-                base_path=base_path
+                overwrite=overwrite,
+                base_path=base_path,
+                leave_site=leave_site,
+                visited=visited
             )
         if exclude_html:
             return downloaded
