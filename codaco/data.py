@@ -38,7 +38,8 @@ def load_dataset(identifier, source="file", download_to="datasets"):
     if source == "file":
         return load_file(Path(identifier))
     elif source == "ucimlr":
-        return load_ucimlr(identifier, download_to=download_to)
+        download_ucimlr(identifier, outdir=download_to)
+        return [] # TODO implement data loading
     else:
         raise IOError("Unknown dataset source: {}".format(source))
 
