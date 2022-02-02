@@ -11,7 +11,7 @@ from typing import *
 
 # TODO: function for loading ML-datasets as generators
 
-def load_dataset(identifier, source="file", download_to="datasets"):
+def load_dataset(identifier, source="file", download_to="datasets", force_download: bool=False):
     """
     Main function to download datasets from different sources.
 
@@ -38,7 +38,7 @@ def load_dataset(identifier, source="file", download_to="datasets"):
     if source == "file":
         return load_file(Path(identifier))
     elif source == "ucimlr":
-        download_ucimlr(identifier, outdir=download_to)
+        download_ucimlr(identifier, outdir=download_to, overwrite=force_download)
         return [] # TODO implement data loading
     else:
         raise IOError("Unknown dataset source: {}".format(source))
@@ -69,10 +69,10 @@ def extract_zip(filepath: Path, outdir: Path):
     for f in (x for x in outdir.iterdir() if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
         extract_zip(f, outdir)
 
-def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html: bool=True) -> List[Path]:
+def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html: bool=True, overwrite: bool=False) -> List[Path]:
     outdir.mkdir(exist_ok=True, parents=True)
     fname = outdir / Path(urlparse(url).path).name
-    if fname.exists():
+    if fname.exists() and not overwrite:
         return []
     downloaded = []
     req = requests.get(url)
@@ -103,7 +103,7 @@ def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overw
     if outdir.exists():
         return False
     url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
-    downloaded = download_recursive(url, outdir)
+    downloaded = download_recursive(url, outdir, overwrite=overwrite)
     for outfile in downloaded:
         if outfile.suffix in ['.Z', '.gz', '.zip', '.Z', '.tar', '.bz2']:
             # extract zip files
