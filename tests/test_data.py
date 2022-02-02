@@ -17,23 +17,28 @@ class TestUCImlr(unittest.TestCase):
         """
         Test hypothesis: download_recursive fails to download content in subfolders
         """
-        data = cd.load_dataset("mechanical-analysis", source="ucimlr", download_to=self.data_dir, force_download=True)
+        url = "https://archive.ics.uci.edu/ml/machine-learning-databases/mechanical-analysis/"
+        dlpath = Path(self.data_dir) / "mechanical-analysis"
+        downloaded = cd.download_recursive(url, outdir=dlpath, overwrite=True)
         expected =  {
             Path(self.data_dir) / 'mechanical-analysis/older-version/mechanical-analysis.notused-instances',
             Path(self.data_dir) / 'mechanical-analysis/older-version/mechanical-analysis.names',
             Path(self.data_dir) / 'mechanical-analysis/older-version/mechanical-analysis.data',
             Path(self.data_dir) / 'mechanical-analysis/older-version/Index',
-            Path(self.data_dir) / 'mechanical-analysis/PUMPS-DATA-SET/DISTRIBUTION',
+            Path(self.data_dir) / 'mechanical-analysis/PUMPS-DATA-SET/DISTRIBUTION.Z',
             Path(self.data_dir) / 'mechanical-analysis/PUMPS-DATA-SET/Index',
             Path(self.data_dir) / 'mechanical-analysis/Index'
         }
-        self.assertEqual(expected, set(cd.walk(Path(self.data_dir) / "mechanical-analysis")))
+        self.assertEqual(expected, set(downloaded))
 
     def test_extract_recursive(self):
         """
         Test hypothesis: extract_recursive fails to extract archives that are contained within another archive
         """
-        data = cd.load_dataset("UNIX_user_data-mld", source="ucimlr", download_to=self.data_dir, force_download=True)
+        url = "https://archive.ics.uci.edu/ml/machine-learning-databases/UNIX_user_data-mld/"
+        dlpath = Path(self.data_dir) / "UNIX_user_data-mld"
+        downloaded = cd.download_recursive(url, outdir=dlpath, overwrite=True)
+        cd.extract_recursive(dlpath / "UNIX_user_data.tar.gz", outdir=dlpath)
         expected = {
             Path(self.data_dir) / 'UNIX_user_data-mld/README',
             Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data.html',
