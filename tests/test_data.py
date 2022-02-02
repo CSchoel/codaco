@@ -54,3 +54,17 @@ class TestUCImlr(unittest.TestCase):
             Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER8'
         }
         self.assertEqual(expected, set(cd.walk(Path(self.data_dir) / "UNIX_user_data-mld")))
+
+    def test_load_csv(self):
+        """
+        Test hypothesis: load_csv_data fails to identify csv files or falsely identifies plain text files as csv.
+        """
+        pass
+
+    def test_read_namefile(self):
+        """
+        Test hypothesis: read_namefile fails to find attribute names in block formatted name file.
+        """
+        cd.download_ucimlr("abalone", self.data_dir)
+        nf = cd.read_namefile(Path(self.data_dir) / "abalone/abalone.names", nattrib=9)
+        print(nf)
