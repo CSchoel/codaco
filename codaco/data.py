@@ -100,7 +100,7 @@ def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html
 
 def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overwrite: bool=False) -> bool:
     outdir = Path(outdir).joinpath(identifier)
-    if outdir.exists():
+    if outdir.exists() and not overwrite:
         return False
     url = f"https://archive.ics.uci.edu/ml/machine-learning-databases/{identifier}/"
     downloaded = download_recursive(url, outdir, overwrite=overwrite)
