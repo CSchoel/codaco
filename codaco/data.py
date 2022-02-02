@@ -181,6 +181,7 @@ def find_table_block(text: str, tabsize: int=4):
         colsum = sum(colcount.values())
         if colsum > maxline[1]:
             maxline = (i, colsum)
+        lastline = colcount
     if maxline[1] < 14:
         return False
     return maxline
