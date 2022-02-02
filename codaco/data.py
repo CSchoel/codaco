@@ -147,7 +147,7 @@ def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
                 continue
             outfile = outdir.joinpath(f)
             download_file(url + f, outfile)
-            if outfile.suffix in ['.Z', '.gz']:
+            if outfile.suffix in ['.Z', '.gz', '.zip', '.Z', '.tar', '.bz2']:
                 # extract zip files
                 extract_zip(outfile, outdir)
 
