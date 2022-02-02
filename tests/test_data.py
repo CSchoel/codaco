@@ -27,7 +27,6 @@ class TestUCImlr(unittest.TestCase):
         exceptional = []
         for i in ids:
             print(i)
-            data = cd.load_dataset(i, source="ucimlr", download_to=outdir)
             try:
                 data = cd.load_dataset(i, source="ucimlr", download_to=outdir)
             except Exception as e:
