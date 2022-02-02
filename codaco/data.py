@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import requests
-from urllib.parse import urlparse, ParseResult, urljoin
+from urllib.parse import urlparse, urljoin
 import re
 import warnings
 import shutil
