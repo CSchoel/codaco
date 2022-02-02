@@ -166,7 +166,7 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
 
 def find_table_block(text: str, tabsize: int=4):
     # replace spaces by tabs
-    text.replace("\t", " " * tabsize)
+    text = text.replace("\t", " " * tabsize)
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
     found = []
