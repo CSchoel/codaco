@@ -169,22 +169,26 @@ def find_table_block(text: str, tabsize: int=4):
     text.replace("\t", " " * tabsize)
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
-    maxline = ({}, 0)
+    found = []
     for i, l in enumerate(text.splitlines()):
         colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
         # remove leading indices, because those can stem from indentation
-        print(i, colcount)
         j = 0
         while j in colcount:
             del colcount[j]
             j += 1
         colsum = sum(colcount.values())
-        if colsum > maxline[1]:
-            maxline = (i, colsum)
+        # check if we are at the end of a consecutive run
+        # => i.e. the maximum runlenght of the previous line was higher
+        if max(lastline.values()) > max(colcount.values()):
+            # no continuing lines found
+            found.append((i, colsum))
         lastline = colcount
-    if maxline[1] < 14:
+    print(found)
+    best = max(found, key=lambda x: x[1])
+    if best[1] < 14:
         return False
-    return maxline
+    return best
 
 def load_csv_data(datadir: Path):
     """
