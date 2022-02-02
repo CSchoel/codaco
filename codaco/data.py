@@ -71,7 +71,8 @@ def extract_zip(filepath: Path, outdir: Path):
 
 def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html: bool=True, overwrite: bool=False) -> List[Path]:
     outdir.mkdir(exist_ok=True, parents=True)
-    fname = outdir / Path(urlparse(url).path).name
+    path = Path(urlparse(url).path)
+    fname = outdir / path.name
     if fname.exists() and not overwrite:
         return []
     downloaded = []
@@ -82,11 +83,12 @@ def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html
         refs = re.findall(r"href=\"(.+?)\"", text)
         for r in refs:
             refurl = urljoin(url, r)
+            refpath = Path(urlparse(refurl).path)
             if url.startswith(refurl) and not parents:
                 continue
             downloaded += download_recursive(
                 refurl,
-                outdir / Path(urlparse(refurl).path).parent.relative_to(urlparse(url).path),
+                outdir / refpath.parent.relative_to(path),
                 parents=parents,
                 exclude_html=exclude_html
             )
