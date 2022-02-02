@@ -8,6 +8,8 @@ import warnings
 import shutil
 import subprocess
 from typing import *
+import magic
+import csv
 
 # TODO: function for loading ML-datasets as generators
 
@@ -146,7 +148,48 @@ def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overw
             # extract zip files
             extract_recursive(outfile, outdir)
 
+def read_namefile(f: Path, nattrib: Union[int, None]=None):
+    if nattrib is None:
+        raise Exception("Currently reading namefiles without knowing the number of attributes to look for is not implemented")
+    # TODO handle non-utf8 files (maybe with chardet?)
+    text = f.read_text(encoding="utf-8")
+    if text.count("\t") > 0:
+        # if file contains tabs, test with different tab sizes
+        success = find_table_block(text, tabsize=2)
+        if not success:
+            success = find_table_block(text, tabsize=4)
+        if not success:
+            success = find_table_block(text, tabsize=6)
+    else:
+        success = find_table_block(text)
+    return success
+
+def find_table_block(text: str, tabsize: int=4):
+    # replace spaces by tabs
+    text.replace("\t", " " * tabsize)
+    # find longest consecutive number of lines where more than one column consists entirely of spaces
+    lastline = {}
+    maxline = ({}, 0)
+    for i, l in enumerate(text.splitlines()):
+        colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
+        colsum = sum(colcount.values())
+        if colsum > maxline[1]:
+            maxline = (i, colsum)
+    if maxline[1] < 14:
+        return False
+    return maxline
+
 def load_csv_data(datadir: Path):
+    """
+    Finds all CSV formatted filed in datadir and loads them using pandas.
+    """
+    for f in filter(lambda x: magic.from_file(x) == "CSV text", walk(datadir)):
+        sniffer = csv.Sniffer()
+        # TODO handle non-utf8 files (maybe with chardet?)
+        head = sniffer.has_header(f.read_text("utf-8"))
+        print(f, head)
+    return
+
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
     # exclude .data.html files
     datafiles = [x for x in outdir.iterdir() if ".data" in x.suffixes and x.name.startswith(variant) and not x.suffix == ".html"]
