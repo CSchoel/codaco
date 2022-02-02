@@ -76,7 +76,7 @@ def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html
         return []
     downloaded = []
     req = requests.get(url)
-    if "HTTP" in req.headers['content-type']:
+    if req.headers['content-type'].startswith("text/html"):
         # download recursive
         text = req.text
         refs = re.findall(r"href=\"(.+?)\"", text)
