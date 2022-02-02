@@ -69,32 +69,47 @@ def extract_zip(filepath: Path, outdir: Path):
     for f in (x for x in outdir.iterdir() if x not in known and x.suffix in [".zip", ".gz", ".tar", ".bz2", ".Z"]):
         extract_zip(f, outdir)
 
-def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html: bool=True, overwrite: bool=False) -> List[Path]:
-    outdir.mkdir(exist_ok=True, parents=True)
-    path = Path(urlparse(url).path)
-    fname = outdir / path.name
+def download_recursive(url: str, outdir: Path, parents: bool=False, exclude_html: bool=True, overwrite: bool=False, base_path: Path=None, leave_site=False) -> List[Path]:
+    parsed = urlparse(url)
+    path = Path(parsed.path)
+    if base_path is None:
+        base_path = path
+    if parents:
+        # if we may traverse up until the root, we need to have subdirectories
+        fname = outdir / parsed.netloc / parsed.path
+    else:
+        # otherwise we may cut away the base path and do not need the site
+        fname = outdir / path.relative_to(base_path)
+    fname.parent.mkdir(exist_ok=True, parents=True)
     if fname.exists() and not overwrite:
         return []
     downloaded = []
     req = requests.get(url)
+    # content type text/html indicates that we need to look for links
     if req.headers['content-type'].startswith("text/html"):
-        # download recursive
+        # find all hrefs to trigger recursive download
         text = req.text
-        refs = re.findall(r"href=\"(.+?)\"", text)
+        refs = re.findall(r"href\s*=\s*\"(.+?)\"", text)
         for r in refs:
             refurl = urljoin(url, r)
             refpath = Path(urlparse(refurl).path)
+            print(url + " -> " + refurl)
+            # avoid parents
             if url.startswith(refurl) and not parents:
+                continue
+            # avoid leaving main site
+            if urlparse(refurl).netloc != parsed.netloc and not leave_site:
                 continue
             downloaded += download_recursive(
                 refurl,
-                outdir / refpath.parent.relative_to(path),
+                outdir,
                 parents=parents,
-                exclude_html=exclude_html
+                exclude_html=exclude_html,
+                base_path=base_path
             )
         if exclude_html:
             return downloaded
-    # no html file -> simply download this file
+    # no html file or HTML file is requested -> simply download this file
     with fname.open(mode="wb") as f:
         for chunk in req.iter_content(chunk_size=1024):
             f.write(chunk)
