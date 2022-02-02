@@ -109,7 +109,6 @@ def download_recursive(
         for r in refs:
             refurl = urljoin(url, r)
             refpath = Path(urlparse(refurl).path)
-            print(url + " -> " + refurl)
             # avoid parents
             if url.startswith(refurl) and not parents:
                 continue
@@ -129,6 +128,7 @@ def download_recursive(
         if exclude_html:
             return downloaded
     # no html file or HTML file is requested -> simply download this file
+    print(f"downloading {url}")
     with fname.open(mode="wb") as f:
         for chunk in req.iter_content(chunk_size=1024):
             f.write(chunk)
@@ -143,7 +143,7 @@ def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overw
     for outfile in downloaded:
         if outfile.suffix in ['.Z', '.gz', '.zip', '.Z', '.tar', '.bz2']:
             # extract zip files
-            extract_zip(outfile, outdir)
+            extract_recursive(outfile, outdir)
 
 def load_csv_data(datadir: Path):
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
