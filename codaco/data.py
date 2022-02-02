@@ -60,7 +60,7 @@ def walk(path: Path) -> List[Path]:
         if p.is_file():
             yield p
         else:
-            walk(p)
+            yield from walk(p)
 
 def extract_recursive(filepath: Path, outdir: Path):
     known = list(walk(outdir))
