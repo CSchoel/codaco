@@ -69,19 +69,19 @@ def extract_zip(filepath: pathlib.Path, outdir: pathlib.Path):
 
 def load_ucimlr(identifier, download_to="datasets", variant="", force=False):
     exclude = [
-        "artificial-characters",
-        "audiology",
-        "chess/king-rook-vs-king-knight",
-        "chess/domain-theories",
-        "chorales",
-        "diabetes",
-        "dgp-2",
-        "document-understanding",
-        "ebl",
-        "heart-disease",
-        "function-finding",
-        "icu",
-        "image", # needs advanced CSV handling
+        "artificial-characters", # multiple files
+        "audiology", # special data format
+        "chess/king-rook-vs-king-knight", # lisp code
+        "chess/domain-theories", # domain theory code
+        "chorales", # lisp code
+        "diabetes", # multiple data files
+        "dgp-2", # c code
+        "document-understanding", # lisp code
+        "ebl", # domain theory code
+        "heart-disease", # special data format (CSV but multiple lines are one dataset)
+        "function-finding", # text and data alternate
+        "icu", # -Data instead of .data
+        "image", # needs advanced CSV handling                                                   ****
         "internet_ads", # should work with encoding_errors = 'backslashreplace'
         "led-display-creator", # c code
         "logic-theorist", # includes code, requires recursive download
