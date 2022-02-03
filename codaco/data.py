@@ -177,9 +177,6 @@ def find_table_block(text: str, tabsize: int=4):
         # NOTE: plateaus are discarded by taking leftmost value
         values = filter(lambda x: x[1] > continuation.get(x[0]-1, 0) and x[1] >= continuation.get(x[0]+1, 0), values)
         res = dict(values)
-        # remove column zero, because it stems from indentation
-        if 0 in res:
-            del res[0]
         return res
     def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
         # successively test how many cells a table of height v
@@ -201,6 +198,11 @@ def find_table_block(text: str, tabsize: int=4):
         return max(options, default=(0, None, 0))
     for i, l in enumerate(text.splitlines()):
         colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
+        # removes leading columns zero, because they stem from indentation
+        j = 0
+        while j in colcount:
+            del colcount[j]
+            j += 1
         # check if we are at the end of a consecutive run
         # => i.e. the maximum runlenght of the previous line was higher
         if max(lastline.values(), default=0) > max(colcount.values(), default=0):
