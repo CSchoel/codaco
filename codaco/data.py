@@ -176,7 +176,11 @@ def find_table_block(text: str, tabsize: int=4):
         # only keep local maxima
         # NOTE: plateaus are discarded by taking leftmost value
         values = filter(lambda x: x[1] > continuation.get(x[0]-1, 0) and x[1] >= continuation.get(x[0]+1, 0), values)
-        return dict(values)
+        res = dict(values)
+        # remove column zero, because it stems from indentation
+        if 0 in res:
+            del res[0]
+        return res
     def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
         # successively test how many cells a table of height v
         # would have for each column height v in continuation
