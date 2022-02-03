@@ -155,14 +155,14 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     text = f.read_text(encoding="utf-8")
     if text.count("\t") > 0:
         # if file contains tabs, test with different tab sizes
-        success = find_table_block(text, tabsize=2)
-        if not success:
-            success = find_table_block(text, tabsize=4)
-        if not success:
-            success = find_table_block(text, tabsize=8)
+        vals = [find_table_block(text, tabsize=x) for x in (2, 4, 8)]
+        col, (score, cols, height) = max(vals, key=lambda x: x[1][0])
     else:
-        success = find_table_block(text)
-    return success
+        col, (score, cols, height) = find_table_block(text)
+    return get_block(text, col, height)
+
+def get_block(text: str, lastindex: int, height: int):
+    return "\n".join(x for i, x in enumerate(text.splitlines()) if i <= lastindex and i > lastindex - height)
 
 def find_table_block(text: str, tabsize: int=4):
     # replace tabs by spaces
