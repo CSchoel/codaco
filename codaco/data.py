@@ -208,7 +208,7 @@ def find_table_block(text: str, tabsize: int=4):
             found.append((i-1, max_cells(select_columns(lastline))))
         lastline = colcount
     print(*found, sep="\n")
-    best = max(found, key=lambda x: x[1], default=(0, 0))
+    best = max(found, key=lambda x: x[1], default=(0, [], 0))
     print(best)
     if best[1][0] < 10:
         return False
