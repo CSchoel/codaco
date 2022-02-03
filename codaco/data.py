@@ -205,6 +205,7 @@ def find_table_block(text: str, tabsize: int=4):
             j += 1
         # check if we are at the end of a consecutive run
         # => i.e. the maximum runlenght of the previous line was higher
+        # TODO maye additional condition: number of columns with maximum value drops
         if max(lastline.values(), default=0) > max(colcount.values(), default=0):
             # no continuing lines found
             if max(lastline.values()) > 2:
