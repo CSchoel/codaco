@@ -201,11 +201,11 @@ def find_table_block(text: str, tabsize: int=4):
         # => i.e. the maximum runlenght of the previous line was higher
         if max(lastline.values(), default=0) > max(colcount.values(), default=0):
             # no continuing lines found
-            found.append((i-1, sum(x for x in lastline.values() if x == max(lastline.values()))))
+            found.append((i-1, max_cells(select_columns(lastline))))
         lastline = colcount
     print(found)
     best = max(found, key=lambda x: x[1], default=(0, 0))
-    if best[1] < 20:
+    if best[1][0] < 10:
         return False
     return best
 
