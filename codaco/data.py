@@ -170,14 +170,14 @@ def find_table_block(text: str, tabsize: int=4):
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
     found = []
-    def select_columns(continuation: Dict[int, int]):
+    def select_columns(continuation: Dict[int, int]) -> Dict[int, int]:
         # only keep columns of at least height 3
         values = filter(lambda x: x[1] > 2, continuation.items())
         # only keep local maxima
         # NOTE: plateaus are discarded by taking leftmost value
         values = filter(lambda x: x[1] > continuation.get(x[0]-1, 0) and x[1] >= continuation.get(x[0]+1, 0), values)
         return dict(values)
-    def max_cells(continuation: Dict[int, int]):
+    def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
         # successively test how many cells a table of height v
         # would have for each column height v in continuation
         options = []
