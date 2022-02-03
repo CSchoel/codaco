@@ -197,11 +197,6 @@ def find_table_block(text: str, tabsize: int=4):
         return max(options, default=(0, None, 0))
     for i, l in enumerate(text.splitlines()):
         colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
-        # remove leading indices, because those can stem from indentation
-        j = 0
-        while j in colcount:
-            del colcount[j]
-            j += 1
         # check if we are at the end of a consecutive run
         # => i.e. the maximum runlenght of the previous line was higher
         if max(lastline.values(), default=0) > max(colcount.values(), default=0):
