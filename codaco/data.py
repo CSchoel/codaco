@@ -194,7 +194,7 @@ def find_table_block(text: str, tabsize: int=4):
             indices += ks
             n = v * (len(indices) + 1)
             options.append((n, indices[:], v))
-        return max(options)
+        return max(options, default=(0, None, 0))
     for i, l in enumerate(text.splitlines()):
         colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
         # remove leading indices, because those can stem from indentation
