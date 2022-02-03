@@ -215,8 +215,6 @@ def find_table_block(text: str, tabsize: int=4):
     best = max(found, key=lambda x: x[1], default=(0, (0, [], 0)))
     block = "\n".join(x for i, x in enumerate(text.splitlines()) if i <= best[0] and i > best[0] - best[1][2])
     print(block)
-    if best[1][0] < 10:
-        return False
     return best
 
 def load_csv_data(datadir: Path):
