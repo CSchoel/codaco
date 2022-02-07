@@ -175,14 +175,36 @@ def find_table_blocks(text: str, tabsize: int=4):
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
     found = []
+    def sparse_locmax(points: Dict[int, int]):
+        # Test case 1: {0:3, 1:2, 2:3, 3:2, 4:2, 5:3, 6:2, 7:3} -> {0: 3, 2: 3, 5: 3, 7: 3}
+        # Test case 2: {0:1, 1:2, 2:3, 4:3, 5:2, 6:1, 18:3} -> {2: 3, 4: 3, 18: 3}
+        maxima = {}
+        imax = None
+        # insert gap sentinel to make sure last maximum is also found
+        sentinel = max(points.keys(), default=0) + 2
+        for i in sorted(points.keys()) + [sentinel]:
+            if (i-1) not in points:
+                # gap -> assume start of new maximum
+                if imax is not None:
+                    maxima[imax] = points[imax]
+                imax = i
+            elif points[i] > points[i-1]:
+                # increase -> update maximum
+                imax = i
+            elif points[i] < points[i-1]:
+                # decrease -> imax was local maximum
+                if imax is not None:
+                    maxima[imax] = points[imax]
+                # currently we do not have a candidate for new maximum
+                imax = None
+            # else: plateau -> do nothing
+        return maxima
     def select_columns(continuation: Dict[int, int]) -> Dict[int, int]:
         # only keep columns of at least height 3
         values = filter(lambda x: x[1] > 2, continuation.items())
         # only keep local maxima
-        # NOTE: plateaus are discarded by taking leftmost value
-        values = filter(lambda x: x[1] > continuation.get(x[0]-1, 0) and x[1] >= continuation.get(x[0]+1, 0), values)
-        res = dict(values)
-        return res
+        values = sparse_locmax(dict(values))
+        return values
     def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
         # successively test how many cells a table of height v
         # would have for each column height v in continuation
