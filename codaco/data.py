@@ -169,6 +169,19 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
 def get_block(text: str, lastindex: int, height: int):
     return "\n".join(x for i, x in enumerate(text.splitlines()) if i <= lastindex and i > lastindex - height)
 
+def replace_inline_tabs(text: str, tabsize=4):
+    # source: https://stackoverflow.com/a/16054026
+    res = ""
+    for l in text.splitlines(keepends=True):
+        ioff = len(res)
+        for c in l:
+            if c == '\t':
+                i = len(res) - ioff
+                res += ' ' * (tabsize - i % tabsize)
+            else:
+                res += c
+    return res
+
 def find_table_blocks(text: str, tabsize: int=4):
     # replace tabs by spaces
     text = text.replace("\t", " " * tabsize)
@@ -205,6 +218,19 @@ def find_table_blocks(text: str, tabsize: int=4):
         # only keep local maxima
         values = sparse_locmax(dict(values))
         return values
+    def values_in_column(lines: List[str], column: int):
+        # move to leftmost end of column separator
+        leftmost = column
+        while leftmost > 0 and all(l[leftmost-1] == ' ' for l in lines):
+            leftmost -= 1
+        rightmost = column
+        while all(len(l) > rightmost + 1 and l[rightmost+1] == ' ' for l in lines):
+            rightmost += 1
+        lvalues = [] if leftmost == 0 else (l[leftmost-1] != ' ' for l in lines)
+        rvalues = (len(l) > rightmost + 1 and l[rightmost+1] != ' ' for l in lines)
+        has_value = (l and r for l,r in zip(lvalues, rvalues))
+        return sum(has_value)
+
     def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
         # successively test how many cells a table of height v
         # would have for each column height v in continuation
