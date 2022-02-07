@@ -155,16 +155,21 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     text = f.read_text(encoding="utf-8")
     if text.count("\t") > 0:
         # if file contains tabs, test with different tab sizes
-        vals = [find_table_block(text, tabsize=x) for x in (2, 4, 8)]
-        col, (score, cols, height) = max(vals, key=lambda x: x[1][0])
+        vals = [find_table_blocks(text, tabsize=x) for x in (2, 4, 8)]
+        blocks = sum(vals, start=[])
     else:
-        col, (score, cols, height) = find_table_block(text)
-    return get_block(text, col, height)
+        blocks = find_table_blocks(text)
+    best = list(sorted(blocks, reverse=True))[:5]
+    for score, last, height, tabsize in best:
+        b = get_block(text.replace("\t", " "*tabsize), last, height)
+        print(score)
+        print(b)
+    return None
 
 def get_block(text: str, lastindex: int, height: int):
     return "\n".join(x for i, x in enumerate(text.splitlines()) if i <= lastindex and i > lastindex - height)
 
-def find_table_block(text: str, tabsize: int=4):
+def find_table_blocks(text: str, tabsize: int=4):
     # replace tabs by spaces
     text = text.replace("\t", " " * tabsize)
     # find longest consecutive number of lines where more than one column consists entirely of spaces
@@ -209,13 +214,13 @@ def find_table_block(text: str, tabsize: int=4):
         if max(lastline.values(), default=0) > max(colcount.values(), default=0):
             # no continuing lines found
             if max(lastline.values()) > 2:
+                print(i, colcount)
                 # colum height is at least 3
-                found.append((i-1, max_cells(select_columns(lastline))))
+                score, indices, height = max_cells(select_columns(lastline))
+                found.append((score, i-1, height, tabsize))
         lastline = colcount
-    best = max(found, key=lambda x: x[1], default=(0, (0, [], 0)))
-    block = "\n".join(x for i, x in enumerate(text.splitlines()) if i <= best[0] and i > best[0] - best[1][2])
-    print(block)
-    return best
+    # TODO additional score: in the column after empty column there is no space
+    return found
 
 def load_csv_data(datadir: Path):
     """
