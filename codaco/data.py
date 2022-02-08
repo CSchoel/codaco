@@ -238,7 +238,10 @@ def guess_tabwidth(text: str, guesses=[2, 4, 6, 8]):
     s, g = max(scored)
     return g
 
-def sparse_locmax(points: Dict[int, int]):
+def sparse_locmax(points: Dict[int, int]) -> Dict[int, int]:
+    """
+    Finds local maxima in a sparse list
+    """
     # Test case 1: {0:3, 1:2, 2:3, 3:2, 4:2, 5:3, 6:2, 7:3} -> {0: 3, 2: 3, 5: 3, 7: 3}
     # Test case 2: {0:1, 1:2, 2:3, 4:3, 5:2, 6:1, 18:3} -> {2: 3, 4: 3, 18: 3}
     maxima = {}
@@ -264,6 +267,12 @@ def sparse_locmax(points: Dict[int, int]):
     return maxima
 
 def select_columns(continuation: Dict[int, int]) -> Dict[int, int]:
+    """
+    Selects only columns that have a height of at least 3 and
+    that are local maxima.
+
+    Helper function to be used in find_table_blocks().
+    """
     # only keep columns of at least height 3
     values = filter(lambda x: x[1] > 2, continuation.items())
     # only keep local maxima
@@ -271,6 +280,12 @@ def select_columns(continuation: Dict[int, int]) -> Dict[int, int]:
     return values
 
 def values_in_column(lines: List[str], column: int):
+    """
+    Scores a potential column by examining its edges and
+    counting how many lines of the column are actually
+    edges (i.e. transitions between space and non-space
+    characters).
+    """
     # move to leftmost end of column separator
     leftmost = column
     while leftmost > 0 and all(l[leftmost-1] == ' ' for l in lines):
@@ -284,6 +299,9 @@ def values_in_column(lines: List[str], column: int):
     return sum(has_value)
 
 def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
+    """
+    Determines the best candidate for a table based on column run-length data.
+    """
     # successively test how many cells a table of height v
     # would have for each column height v in continuation
     options = []
