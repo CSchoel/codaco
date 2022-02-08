@@ -286,10 +286,10 @@ def find_table_blocks(text: str, tabsize: int=4):
             rightmost += 1
         lvalues = [] if leftmost == 0 else (l[leftmost-1] != ' ' for l in lines)
         rvalues = (len(l) > rightmost + 1 and l[rightmost+1] != ' ' for l in lines)
-        has_value = (l and r for l,r in zip(lvalues, rvalues))
+        has_value = (l or r for l,r in zip(lvalues, rvalues))
         return sum(has_value)
 
-    def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
+    def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
         # successively test how many cells a table of height v
         # would have for each column height v in continuation
         options = []
@@ -304,10 +304,11 @@ def find_table_blocks(text: str, tabsize: int=4):
         indices = []
         for v, ks in cbh_sorted:
             indices += ks
-            n = v * (len(indices) + 1)
+            n = sum([values_in_column(lines[len(lines)-v:], idx) for idx in indices])
             options.append((n, indices[:], v))
         return max(options, default=(0, None, 0))
-    for i, l in enumerate(text.splitlines()):
+    lines = text.splitlines()
+    for i, l in enumerate(lines):
         colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
         # removes leading columns zero, because they stem from indentation
         j = 0
@@ -322,7 +323,7 @@ def find_table_blocks(text: str, tabsize: int=4):
             if max(lastline.values()) > 2:
                 print(i, colcount)
                 # colum height is at least 3
-                score, indices, height = max_cells(select_columns(lastline))
+                score, indices, height = max_cells(lines[0:i+1], select_columns(lastline))
                 found.append((score, i-1, height, tabsize))
         lastline = colcount
     # TODO additional score: in the column after empty column there is no space
