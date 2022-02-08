@@ -10,6 +10,7 @@ import subprocess
 from typing import *
 import magic
 import csv
+import re
 
 # TODO: function for loading ML-datasets as generators
 
@@ -230,6 +231,18 @@ def find_table_blocks(text: str, tabsize: int=4):
         rvalues = (len(l) > rightmost + 1 and l[rightmost+1] != ' ' for l in lines)
         has_value = (l and r for l,r in zip(lvalues, rvalues))
         return sum(has_value)
+    def tab_lines(text: str):
+        lines = text.splitlines()
+        tablines = [i for i in range(len(lines)) if len(re.findall(r"\S(\t|  )", lines[i])) > 0]
+        tablines.append(max(tablines) + 2) # add gap at end as sentinel
+        combined = []
+        start = 0 if len(tablines) == 0 else tablines[0]
+        for i,j in zip(tablines[:-1], tablines[1:]):
+            if (j-i) > 1: # gap
+                if (i-start) > 1:
+                    combined.append((start, i))
+                start = j
+        return combined
 
     def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
         # successively test how many cells a table of height v
