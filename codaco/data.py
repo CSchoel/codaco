@@ -307,6 +307,7 @@ def find_table_blocks(text: str, tabsize: int=4):
             options.append((n, indices[:], v))
         return max(options, default=(0, None, 0))
     lines = text.splitlines()
+    lines.append("") # add empty line as sentinel
     for i, l in enumerate(lines):
         colcount = {j: lastline.get(j, 0) + 1 for j, c in enumerate(l) if c == " "}
         # removes leading columns zero, because they stem from indentation
