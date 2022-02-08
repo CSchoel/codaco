@@ -183,22 +183,21 @@ def replace_inline_tabs(text: str, tabsize=4):
     return res
 
 
-def simple_table_blocks(text: str) -> List[Tuple[int, int]]:
+def simple_table_blocks(text: str) -> List[Tuple[int, int, int]]:
     """
     Finds line spans in a text that are likely to contain a
     fixed-width table.
     """
     lines = text.splitlines()
-    tablines = [i for i in range(len(lines)) if len(re.findall(r"\S(\t|  )", lines[i])) > 0]
+    edgecount = [len(re.findall(r"\S(\t|  )", l)) for l in lines]
+    tablines = [i for i in range(len(lines)) if edgecount[i] > 0]
     tablines.append(max(tablines) + 2) # add gap at end as sentinel
     combined = []
     start = 0 if len(tablines) == 0 else tablines[0]
     for cur,nxt in zip(tablines[:-1], tablines[1:]):
         if (nxt-cur) > 1: # gap
             if (cur-start) > 1: # at least two lines
-                combined.append((start, cur))
-                tabtext = "\n".join(lines[start:cur+1])
-                print(pd.read_fwf(io.StringIO(tabtext)))
+                combined.append((sum(edgecount[start:cur+1]), start, cur+1))
             start = nxt
     return combined
 
