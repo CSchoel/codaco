@@ -232,6 +232,15 @@ def find_table_blocks(text: str, tabsize: int=4):
         rvalues = (len(l) > rightmost + 1 and l[rightmost+1] != ' ' for l in lines)
         has_value = (l and r for l,r in zip(lvalues, rvalues))
         return sum(has_value)
+    def tableness(text: str):
+        lastedges = set()
+        score = 0
+        for l in text.splitlines():
+            # count number of edges that continue from last line
+            edges = {i for i in range(len(l)-1) if l[i].isspace() ^ l[i+1].isspace()}
+            score += len(lastedges.intersection(edges))
+            lastedges = edges
+        return score
     def tab_lines(text: str):
         lines = text.splitlines()
         tablines = [i for i in range(len(lines)) if len(re.findall(r"\S(\t|  )", lines[i])) > 0]
