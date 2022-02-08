@@ -161,14 +161,14 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
         text = replace_inline_tabs(text, tabsize=guess_tabwidth(text))
     blocks = find_table_blocks(text)
     best = list(sorted(blocks, reverse=True))[:5]
-    for score, last, height, tabsize in best:
-        b = get_block(text.replace("\t", " "*tabsize), last, height)
+    for score, start, end in best:
+        b = get_block(text, start, end)
         print(score)
         print(b)
     return None
 
-def get_block(text: str, lastindex: int, height: int):
-    return "\n".join(x for i, x in enumerate(text.splitlines()) if i <= lastindex and i > lastindex - height)
+def get_block(text: str, start: int, end: int):
+    return "\n".join(x for i, x in enumerate(text.splitlines()) if start >= i > end)
 
 def replace_inline_tabs(text: str, tabsize=4):
     # source: https://stackoverflow.com/a/16054026
@@ -298,7 +298,7 @@ def values_in_column(lines: List[str], column: int):
     has_value = (l or r for l,r in zip(lvalues, rvalues))
     return sum(has_value)
 
-def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
+def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, int]:
     """
     Determines the best candidate for a fixed-width table based on
     column run-length data.
@@ -318,11 +318,11 @@ def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Unio
     for v, ks in cbh_sorted:
         indices += ks
         n = sum([values_in_column(lines[len(lines)-v:], idx) for idx in indices])
-        options.append((n, indices[:], v))
-    return max(options, default=(0, None, 0))
+        options.append((n, v))
+    return max(options, default=(0, 0))
 
 
-def find_table_blocks(text: str):
+def find_table_blocks(text: str) -> List[Tuple[int, int, int]]:
     """
     Finds candidates for fixed-width table blocks in a string by
     generating run-lengths of potential columns and evaluating
@@ -334,6 +334,10 @@ def find_table_blocks(text: str):
         Disadvantage:
             * Much more complicated / worse performance.
             * Might currently miss tables where one column is continued after the end of the table.
+
+    Returns:
+        (score, start, end): tuple with score, start and end
+            index of candidate. End index is exclusive.
     """
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
@@ -357,8 +361,8 @@ def find_table_blocks(text: str):
             if max(lastline.values()) > 2:
                 print(i, lastline)
                 # colum height is at least 3
-                score, indices, height = max_cells(lines[0:i], select_columns(lastline))
-                found.append((score, i-1, height, tabsize))
+                score, height = max_cells(lines[0:i], select_columns(lastline))
+                found.append((score, i - height, i))
         lastline = colcount
     return found
 
