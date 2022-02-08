@@ -241,7 +241,7 @@ def find_table_blocks(text: str, tabsize: int=4):
             score += len(lastedges.intersection(edges))
             lastedges = edges
         return score
-    def tab_lines(text: str):
+    def tablelike_spans(text: str):
         lines = text.splitlines()
         tablines = [i for i in range(len(lines)) if len(re.findall(r"\S(\t|  )", lines[i])) > 0]
         tablines.append(max(tablines) + 2) # add gap at end as sentinel
