@@ -317,7 +317,9 @@ def find_table_blocks(text: str, tabsize: int=4):
             j += 1
         # check if we are at the end of a consecutive run
         # => i.e. the maximum runlenght of the previous line was higher
-        # TODO maye additional condition: number of columns with maximum value drops
+        # TODO maybe additional condition: number of columns with maximum value drops
+        # pro: would find tables where one column continues after the end of the table
+        # con: would report a lot of unfinished tables (need to filter overlap?)
         if max(lastline.values(), default=0) > max(colcount.values(), default=0):
             # no continuing lines found
             if max(lastline.values()) > 2:
