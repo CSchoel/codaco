@@ -183,7 +183,7 @@ def replace_inline_tabs(text: str, tabsize=4):
     return res
 
 
-def tablelike_spans(text: str) -> List[Tuple[int, int]]:
+def simple_table_blocks(text: str) -> List[Tuple[int, int]]:
     """
     Finds line spans in a text that are likely to contain a
     fixed-width table.
