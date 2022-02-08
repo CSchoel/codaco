@@ -1,3 +1,4 @@
+from os import replace
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -157,10 +158,8 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     text = f.read_text(encoding="utf-8")
     if text.count("\t") > 0:
         # if file contains tabs, test with different tab sizes
-        vals = [find_table_blocks(text, tabsize=x) for x in (2, 4, 8)]
-        blocks = sum(vals, start=[])
-    else:
-        blocks = find_table_blocks(text)
+        text = replace_inline_tabs(text, tabsize=guess_tabwidth(text))
+    blocks = find_table_blocks(text)
     best = list(sorted(blocks, reverse=True))[:5]
     for score, last, height, tabsize in best:
         b = get_block(text.replace("\t", " "*tabsize), last, height)
