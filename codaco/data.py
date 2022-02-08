@@ -321,7 +321,7 @@ def find_table_blocks(text: str, tabsize: int=4):
         if max(lastline.values(), default=0) > max(colcount.values(), default=0):
             # no continuing lines found
             if max(lastline.values()) > 2:
-                print(i, colcount)
+                print(i, lastline)
                 # colum height is at least 3
                 score, indices, height = max_cells(lines[0:i], select_columns(lastline))
                 found.append((score, i-1, height, tabsize))
