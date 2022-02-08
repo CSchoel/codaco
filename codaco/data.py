@@ -238,6 +238,70 @@ def guess_tabwidth(text: str, guesses=[2, 4, 6, 8]):
     s, g = max(scored)
     return g
 
+def sparse_locmax(points: Dict[int, int]):
+    # Test case 1: {0:3, 1:2, 2:3, 3:2, 4:2, 5:3, 6:2, 7:3} -> {0: 3, 2: 3, 5: 3, 7: 3}
+    # Test case 2: {0:1, 1:2, 2:3, 4:3, 5:2, 6:1, 18:3} -> {2: 3, 4: 3, 18: 3}
+    maxima = {}
+    imax = None
+    # insert gap sentinel to make sure last maximum is also found
+    sentinel = max(points.keys(), default=0) + 2
+    for i in sorted(points.keys()) + [sentinel]:
+        if (i-1) not in points:
+            # gap -> assume start of new maximum
+            if imax is not None:
+                maxima[imax] = points[imax]
+            imax = i
+        elif points[i] > points[i-1]:
+            # increase -> update maximum
+            imax = i
+        elif points[i] < points[i-1]:
+            # decrease -> imax was local maximum
+            if imax is not None:
+                maxima[imax] = points[imax]
+            # currently we do not have a candidate for new maximum
+            imax = None
+        # else: plateau -> do nothing
+    return maxima
+
+def select_columns(continuation: Dict[int, int]) -> Dict[int, int]:
+    # only keep columns of at least height 3
+    values = filter(lambda x: x[1] > 2, continuation.items())
+    # only keep local maxima
+    values = sparse_locmax(dict(values))
+    return values
+
+def values_in_column(lines: List[str], column: int):
+    # move to leftmost end of column separator
+    leftmost = column
+    while leftmost > 0 and all(l[leftmost-1] == ' ' for l in lines):
+        leftmost -= 1
+    rightmost = column
+    while all(len(l) > rightmost + 1 and l[rightmost+1] == ' ' for l in lines):
+        rightmost += 1
+    lvalues = [False] * len(lines) if leftmost == 0 else (l[leftmost-1] != ' ' for l in lines)
+    rvalues = (len(l) > rightmost + 1 and l[rightmost+1] != ' ' for l in lines)
+    has_value = (l or r for l,r in zip(lvalues, rvalues))
+    return sum(has_value)
+
+def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
+    # successively test how many cells a table of height v
+    # would have for each column height v in continuation
+    options = []
+    cols_by_height = {}
+    for k, v in continuation.items():
+        cols_by_height.setdefault(v, [])
+        cols_by_height[v].append(k)
+    # by staring with the highest column, we know that we
+    # only have to add more column indices, not substract those
+    # that are not high enough
+    cbh_sorted = sorted(cols_by_height.items(), reverse=True)
+    indices = []
+    for v, ks in cbh_sorted:
+        indices += ks
+        n = sum([values_in_column(lines[len(lines)-v:], idx) for idx in indices])
+        options.append((n, indices[:], v))
+    return max(options, default=(0, None, 0))
+
 
 def find_table_blocks(text: str, tabsize: int=4):
     # replace tabs by spaces
@@ -245,67 +309,6 @@ def find_table_blocks(text: str, tabsize: int=4):
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
     found = []
-    def sparse_locmax(points: Dict[int, int]):
-        # Test case 1: {0:3, 1:2, 2:3, 3:2, 4:2, 5:3, 6:2, 7:3} -> {0: 3, 2: 3, 5: 3, 7: 3}
-        # Test case 2: {0:1, 1:2, 2:3, 4:3, 5:2, 6:1, 18:3} -> {2: 3, 4: 3, 18: 3}
-        maxima = {}
-        imax = None
-        # insert gap sentinel to make sure last maximum is also found
-        sentinel = max(points.keys(), default=0) + 2
-        for i in sorted(points.keys()) + [sentinel]:
-            if (i-1) not in points:
-                # gap -> assume start of new maximum
-                if imax is not None:
-                    maxima[imax] = points[imax]
-                imax = i
-            elif points[i] > points[i-1]:
-                # increase -> update maximum
-                imax = i
-            elif points[i] < points[i-1]:
-                # decrease -> imax was local maximum
-                if imax is not None:
-                    maxima[imax] = points[imax]
-                # currently we do not have a candidate for new maximum
-                imax = None
-            # else: plateau -> do nothing
-        return maxima
-    def select_columns(continuation: Dict[int, int]) -> Dict[int, int]:
-        # only keep columns of at least height 3
-        values = filter(lambda x: x[1] > 2, continuation.items())
-        # only keep local maxima
-        values = sparse_locmax(dict(values))
-        return values
-    def values_in_column(lines: List[str], column: int):
-        # move to leftmost end of column separator
-        leftmost = column
-        while leftmost > 0 and all(l[leftmost-1] == ' ' for l in lines):
-            leftmost -= 1
-        rightmost = column
-        while all(len(l) > rightmost + 1 and l[rightmost+1] == ' ' for l in lines):
-            rightmost += 1
-        lvalues = [False] * len(lines) if leftmost == 0 else (l[leftmost-1] != ' ' for l in lines)
-        rvalues = (len(l) > rightmost + 1 and l[rightmost+1] != ' ' for l in lines)
-        has_value = (l or r for l,r in zip(lvalues, rvalues))
-        return sum(has_value)
-
-    def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
-        # successively test how many cells a table of height v
-        # would have for each column height v in continuation
-        options = []
-        cols_by_height = {}
-        for k, v in continuation.items():
-            cols_by_height.setdefault(v, [])
-            cols_by_height[v].append(k)
-        # by staring with the highest column, we know that we
-        # only have to add more column indices, not substract those
-        # that are not high enough
-        cbh_sorted = sorted(cols_by_height.items(), reverse=True)
-        indices = []
-        for v, ks in cbh_sorted:
-            indices += ks
-            n = sum([values_in_column(lines[len(lines)-v:], idx) for idx in indices])
-            options.append((n, indices[:], v))
-        return max(options, default=(0, None, 0))
     lines = text.splitlines()
     lines.append("") # add empty line as sentinel
     for i, l in enumerate(lines):
