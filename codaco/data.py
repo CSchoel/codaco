@@ -171,7 +171,6 @@ def get_block(text: str, start: int, end: int):
     return "\n".join(x for i, x in enumerate(text.splitlines()) if start <= i < end)
 
 def replace_inline_tabs(text: str, tabsize=4):
-    # source: https://stackoverflow.com/a/16054026
     res = ""
     for l in text.splitlines(keepends=True):
         ioff = len(res)
