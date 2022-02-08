@@ -326,7 +326,6 @@ def find_table_blocks(text: str, tabsize: int=4):
                 score, indices, height = max_cells(lines[0:i+1], select_columns(lastline))
                 found.append((score, i-1, height, tabsize))
         lastline = colcount
-    # TODO additional score: in the column after empty column there is no space
     return found
 
 def load_csv_data(datadir: Path):
