@@ -185,7 +185,11 @@ def replace_inline_tabs(text: str, tabsize=4):
     return res
 
 
-def tablelike_spans(text: str):
+def tablelike_spans(text: str) -> List[Tuple[int, int]]:
+    """
+    Finds line spans in a text that are likely to contain a
+    fixed-width table.
+    """
     lines = text.splitlines()
     tablines = [i for i in range(len(lines)) if len(re.findall(r"\S(\t|  )", lines[i])) > 0]
     tablines.append(max(tablines) + 2) # add gap at end as sentinel
@@ -201,6 +205,14 @@ def tablelike_spans(text: str):
     return combined
 
 def tableness(text: str):
+    """
+    Calculates a "tableness" score for a string by counting
+    the number of edges (indices where a space is followed
+    by a non-space or vice versa) that continue into the
+    next line.
+
+    This is a helper function for guess_tabwidth.
+    """
     lastedges = set()
     score = 0
     for l in text.splitlines():
