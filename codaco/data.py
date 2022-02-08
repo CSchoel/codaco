@@ -284,7 +284,7 @@ def find_table_blocks(text: str, tabsize: int=4):
         rightmost = column
         while all(len(l) > rightmost + 1 and l[rightmost+1] == ' ' for l in lines):
             rightmost += 1
-        lvalues = [] if leftmost == 0 else (l[leftmost-1] != ' ' for l in lines)
+        lvalues = [False] * len(lines) if leftmost == 0 else (l[leftmost-1] != ' ' for l in lines)
         rvalues = (len(l) > rightmost + 1 and l[rightmost+1] != ' ' for l in lines)
         has_value = (l or r for l,r in zip(lvalues, rvalues))
         return sum(has_value)
