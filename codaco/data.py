@@ -11,6 +11,7 @@ from typing import *
 import magic
 import csv
 import re
+import io
 
 # TODO: function for loading ML-datasets as generators
 
@@ -239,8 +240,10 @@ def find_table_blocks(text: str, tabsize: int=4):
         start = 0 if len(tablines) == 0 else tablines[0]
         for i,j in zip(tablines[:-1], tablines[1:]):
             if (j-i) > 1: # gap
-                if (i-start) > 1:
+                if (i-start) > 1: # at least two lines
                     combined.append((start, i))
+                    tabtext = "\n".join(lines[start:i+1])
+                    print(pd.read_fwf(io.StringIO(tabtext)))
                 start = j
         return combined
 
