@@ -323,7 +323,7 @@ def find_table_blocks(text: str, tabsize: int=4):
             if max(lastline.values()) > 2:
                 print(i, colcount)
                 # colum height is at least 3
-                score, indices, height = max_cells(lines[0:i+1], select_columns(lastline))
+                score, indices, height = max_cells(lines[0:i], select_columns(lastline))
                 found.append((score, i-1, height, tabsize))
         lastline = colcount
     return found
