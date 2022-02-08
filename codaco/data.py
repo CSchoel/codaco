@@ -168,7 +168,7 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     return None
 
 def get_block(text: str, start: int, end: int):
-    return "\n".join(x for i, x in enumerate(text.splitlines()) if start >= i > end)
+    return "\n".join(x for i, x in enumerate(text.splitlines()) if start <= i < end)
 
 def replace_inline_tabs(text: str, tabsize=4):
     # source: https://stackoverflow.com/a/16054026
