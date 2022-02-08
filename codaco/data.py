@@ -222,6 +222,24 @@ def tableness(text: str):
         lastedges = edges
     return score
 
+def guess_tabwidth(text: str, guesses=[2, 4, 6, 8]):
+    """
+    Guesses the tab width used for text document containing
+    fixed-width tables.
+
+    Uses tableness() function to determine a score based on
+    the number of edges (i.e. indices where a space is followed
+    by a non-scpae or vice versa) that continue into the next
+    line.
+
+    Returns the guess out of guesses that produced the highest
+    tableness score.
+    """
+    scored = [(tableness(replace_inline_tabs(text, g)), g) for g in guesses]
+    s, g = max(scored)
+    return g
+
+
 def find_table_blocks(text: str, tabsize: int=4):
     # replace tabs by spaces
     text = text.replace("\t", " " * tabsize)
