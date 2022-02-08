@@ -300,7 +300,8 @@ def values_in_column(lines: List[str], column: int):
 
 def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
     """
-    Determines the best candidate for a table based on column run-length data.
+    Determines the best candidate for a fixed-width table based on
+    column run-length data.
     """
     # successively test how many cells a table of height v
     # would have for each column height v in continuation
@@ -321,9 +322,19 @@ def max_cells(lines: List[str], continuation: Dict[int, int]) -> Tuple[int, Unio
     return max(options, default=(0, None, 0))
 
 
-def find_table_blocks(text: str, tabsize: int=4):
-    # replace tabs by spaces
-    text = replace_inline_tabs(text, tabsize=tabsize)
+def find_table_blocks(text: str):
+    """
+    Finds candidates for fixed-width table blocks in a string by
+    generating run-lengths of potential columns and evaluating
+    candidates with max_cells().
+
+    Comparison to simple_table_blocks():
+        Advantage:
+            * Finds tables that have only a single space as column separator.
+        Disadvantage:
+            * Much more complicated / worse performance.
+            * Might currently miss tables where one column is continued after the end of the table.
+    """
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
     found = []
