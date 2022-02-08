@@ -160,7 +160,7 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
         # if file contains tabs, test with different tab sizes
         text = replace_inline_tabs(text, tabsize=guess_tabwidth(text))
     blocks = simple_table_blocks(text)
-    best = list(sorted(blocks, reverse=True))[:5]
+    best = list(sorted(blocks, reverse=True))
     for score, start, end in best:
         b = get_block(text, start, end)
         print(score)
