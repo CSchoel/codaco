@@ -247,13 +247,13 @@ def find_table_blocks(text: str, tabsize: int=4):
         tablines.append(max(tablines) + 2) # add gap at end as sentinel
         combined = []
         start = 0 if len(tablines) == 0 else tablines[0]
-        for i,j in zip(tablines[:-1], tablines[1:]):
-            if (j-i) > 1: # gap
-                if (i-start) > 1: # at least two lines
-                    combined.append((start, i))
-                    tabtext = "\n".join(lines[start:i+1])
+        for cur,nxt in zip(tablines[:-1], tablines[1:]):
+            if (nxt-cur) > 1: # gap
+                if (cur-start) > 1: # at least two lines
+                    combined.append((start, cur))
+                    tabtext = "\n".join(lines[start:cur+1])
                     print(pd.read_fwf(io.StringIO(tabtext)))
-                start = j
+                start = nxt
         return combined
 
     def max_cells(continuation: Dict[int, int]) -> Tuple[int, Union[List[int], None], int]:
