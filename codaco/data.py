@@ -242,7 +242,7 @@ def guess_tabwidth(text: str, guesses=[2, 4, 6, 8]):
 
 def find_table_blocks(text: str, tabsize: int=4):
     # replace tabs by spaces
-    text = text.replace("\t", " " * tabsize)
+    text = replace_inline_tabs(text, tabsize=tabsize)
     # find longest consecutive number of lines where more than one column consists entirely of spaces
     lastline = {}
     found = []
