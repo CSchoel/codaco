@@ -196,15 +196,6 @@ def load_csv_data(datadir: Path) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]
     else:
         return data
 
-def guess_ucimlr_columns(namefile):
-    if not namefile.exists():
-        return None
-    try:
-        text = namefile.read_text(encoding="utf-8")
-    except UnicodeDecodeError:
-        text = namefile.read_text(encoding="latin-1")
-    return None
-
 def download_file(url, path):
     with requests.get(url, stream=True) as r:
         # raise error if HTTP error code was returned
