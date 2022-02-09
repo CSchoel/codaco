@@ -13,7 +13,7 @@ import magic
 import csv
 import re
 import io
-from fwf import replace_inline_tabs, guess_tabwidth, simple_table_blocks, get_table
+from .fwf import replace_inline_tabs, guess_tabwidth, simple_table_blocks, get_table
 
 # TODO: function for loading ML-datasets as generators
 
