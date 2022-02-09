@@ -13,7 +13,7 @@ import magic
 import csv
 import re
 import io
-from fwf import replace_inline_tabs, guess_tabwidth, simple_table_blocks, get_block
+from fwf import replace_inline_tabs, guess_tabwidth, simple_table_blocks, get_table
 
 # TODO: function for loading ML-datasets as generators
 
@@ -163,9 +163,9 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     blocks = simple_table_blocks(text)
     best = list(sorted(blocks, reverse=True))
     for score, start, end in best:
-        b = get_block(text, start, end)
+        df = get_table(text, start, end)
         print(score)
-        print(b)
+        print(df)
     return None
 
 def load_csv_data(datadir: Path):

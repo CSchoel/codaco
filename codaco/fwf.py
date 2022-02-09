@@ -1,5 +1,8 @@
 import re
 from typing import *
+import unicodedata as ud
+import pandas as pd
+import io
 
 def replace_inline_tabs(text: str, tabsize=4):
     res = ""
@@ -69,6 +72,13 @@ def guess_tabwidth(text: str, guesses=[2, 4, 6, 8]):
 
 def get_block(text: str, start: int, end: int):
     return "\n".join(x for i, x in enumerate(text.splitlines()) if start <= i < end)
+
+
+def get_table(text: str, start: int, end: int):
+    b = get_block(text, start, end)
+    # remove lines that only contain punctuation, symbol and separator chars
+    b = "".join(l for l in b.splitlines(keepends=True) if any(ud.category(c)[0] not in ['Z', 'P', 'S'] for c in l))
+    return pd.read_fwf(io.StringIO(b))
 
 def sparse_locmax(points: Dict[int, int]) -> Dict[int, int]:
     """
