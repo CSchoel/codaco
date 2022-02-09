@@ -215,9 +215,6 @@ def guess_ucimlr_columns(namefile):
         text = namefile.read_text(encoding="latin-1")
     return None
 
-import csv
-csv.Sniffer()
-
 def download_file(url, path):
     with requests.get(url, stream=True) as r:
         # raise error if HTTP error code was returned
