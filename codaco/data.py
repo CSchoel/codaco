@@ -152,9 +152,7 @@ def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overw
             # extract zip files
             extract_recursive(outfile, outdir)
 
-def read_namefile(f: Path, nattrib: Union[int, None]=None):
-    if nattrib is None:
-        raise Exception("Currently reading namefiles without knowing the number of attributes to look for is not implemented")
+def read_namefile(f: Path):
     # TODO handle non-utf8 files (maybe with chardet?)
     text = f.read_text(encoding="utf-8")
     if text.count("\t") > 0:
@@ -163,13 +161,13 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     blocks = simple_table_blocks(text)
     return [get_table(text, s, e) for _,s,e in blocks]
 
-def guess_column_names(f: Path, nattrib: int) -> List[str]:
-    tables = read_namefile(f, nattrib)
+def guess_column_names(f: Path, nattrib: int=None) -> List[str]:
+    tables = read_namefile(f)
     for t in tables:
-        if t.shape[1] == nattrib and len([x for x in t.columns if not x.startswith("Unnamed")]) == nattrib:
+        if (nattrib is None or t.shape[1] == nattrib) and len([x for x in t.columns if not x.startswith("Unnamed")]) == t.shape[1]:
             # index in rows
             return t.columns
-        elif t.shape[0] == nattrib and len(set(t.iloc[:,0].values)) == nattrib:
+        elif (nattrib is None or t.shape[0] == nattrib) and len(set(t.iloc[:,0].values)) == t.shape[0]:
             # index in columns
             return t.iloc[:,0].values
     raise Exception(f"Could not find a table with row or column size {nattrib} in {f}.")
