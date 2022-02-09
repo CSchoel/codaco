@@ -58,7 +58,7 @@ def load_file(fname):
     if fname.suffix == "csv":
         return pd.read_csv(fname)
     else:
-        raise "Sorry, I cannot load .{} files.".format(fname.suffix)
+        raise Exception("Sorry, I cannot load .{} files.".format(fname.suffix))
 
 
 def walk(path: Path) -> List[Path]:
@@ -141,7 +141,7 @@ def download_recursive(
             f.write(chunk)
         return downloaded + [fname]
 
-def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overwrite: bool=False) -> bool:
+def download_ucimlr(identifier: str, outdir: Union[str | Path]="datasets", overwrite: bool=False):
     outdir = Path(outdir).joinpath(identifier)
     if outdir.exists() and not overwrite:
         return False
