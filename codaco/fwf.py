@@ -76,8 +76,8 @@ def get_block(text: str, start: int, end: int):
 
 def get_table(text: str, start: int, end: int):
     b = get_block(text, start, end)
-    # remove lines that only contain punctuation, symbol and separator chars
-    b = "".join(l for l in b.splitlines(keepends=True) if any(ud.category(c)[0] not in ['Z', 'P', 'S'] for c in l))
+    # remove lines that do not contain letters or numbers
+    b = "".join(l for l in b.splitlines(keepends=True) if any(ud.category(c)[0] in ['L', 'N'] for c in l))
     return pd.read_fwf(io.StringIO(b))
 
 def sparse_locmax(points: Dict[int, int]) -> Dict[int, int]:
