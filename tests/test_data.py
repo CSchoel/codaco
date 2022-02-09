@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 import tempfile
 import shutil
+import codaco.stat as cs
 
 class TestUCImlr(unittest.TestCase):
     def setUp(self):
@@ -61,6 +62,7 @@ class TestUCImlr(unittest.TestCase):
         """
         cd.download_ucimlr("abalone", self.data_dir)
         dat = cd.load_csv_data(self.data_dir / "abalone")
+        cs.inspect_attributes(dat)
         print(dat)
 
     def test_read_namefile(self):
