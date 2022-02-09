@@ -164,7 +164,7 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     best = list(sorted(blocks, reverse=True))
     for score, start, end in best:
         df = get_table(text, start, end)
-        if df.shape[1] == nattrib and len(set(df.columns)) == nattrib:
+        if df.shape[1] == nattrib and len([x for x in df.columns if not x.startswith("Unnamed")]) == nattrib:
             # index in rows
             return df.columns
         elif df.shape[0] == nattrib and len(set(df.iloc[:,0].values)) == nattrib:
