@@ -59,7 +59,9 @@ class TestUCImlr(unittest.TestCase):
         """
         Test hypothesis: load_csv_data fails to identify csv files or falsely identifies plain text files as csv.
         """
-        pass
+        cd.download_ucimlr("abalone", self.data_dir)
+        dat = cd.load_csv_data(self.data_dir / "abalone")
+        print(dat)
 
     def test_read_namefile(self):
         """
