@@ -176,11 +176,20 @@ def load_csv_data(datadir: Path):
     """
     Finds all CSV formatted filed in datadir and loads them using pandas.
     """
-    for f in filter(lambda x: magic.from_file(x) == "CSV text", walk(datadir)):
-        sniffer = csv.Sniffer()
+    textfiles = [f for f in walk(datadir) if magic.from_file(f, mime=True) == 'text/plain']
+    for f in filter(lambda x: magic.from_file(x, mime=True) == "text/csv", walk(datadir)):
         # TODO handle non-utf8 files (maybe with chardet?)
+        sniffer = csv.Sniffer()
         head = sniffer.has_header(f.read_text("utf-8"))
-        print(f, head)
+        # NOTE for very large files we might want to replace this with sniffer.sniff()
+        df = pd.read_csv(f, on_bad_lines="warn")
+        nattrib = len(df.columns)
+        if not head:
+            # find most likely name file by naive position-based name matching
+            namefile = max(textfiles, key=lambda x: sum([ a == b for a,b in zip(str(x), str(f))]))
+            columns = guess_column_names(namefile, nattrib=nattrib)
+            df = pd.read_csv(f, names=columns, on_bad_lines="warn")
+        print(df)
     return
 
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
