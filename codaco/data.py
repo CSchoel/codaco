@@ -164,9 +164,13 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
     best = list(sorted(blocks, reverse=True))
     for score, start, end in best:
         df = get_table(text, start, end)
-        print(score)
-        print(df)
-    return None
+        if df.shape[1] == nattrib and len(set(df.columns)) == nattrib:
+            # index in rows
+            return df.columns
+        elif df.shape[0] == nattrib and len(set(df.iloc[:,0].values)) == nattrib:
+            # index in columns
+            return df.iloc[:,0].values
+    raise Exception(f"Could not find a table with row or column size {nattrib} in {f}.")
 
 def load_csv_data(datadir: Path):
     """
