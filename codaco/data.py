@@ -199,7 +199,7 @@ def simple_table_blocks(text: str) -> List[Tuple[int, int, int]]:
             if (cur-start) > 1: # at least two lines
                 combined.append((sum(edgecount[start:cur+1]), start, cur+1))
             start = nxt
-    return combined
+    return sorted(combined, reverse=True)
 
 def tableness(text: str):
     """
@@ -362,7 +362,7 @@ def find_table_blocks(text: str) -> List[Tuple[int, int, int]]:
                 score, height = max_cells(lines[0:i], select_columns(lastline))
                 found.append((score, i - height, i))
         lastline = colcount
-    return found
+    return sorted(found, reverse=True)
 
 def load_csv_data(datadir: Path):
     """
