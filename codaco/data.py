@@ -161,15 +161,17 @@ def read_namefile(f: Path, nattrib: Union[int, None]=None):
         # if file contains tabs, test with different tab sizes
         text = replace_inline_tabs(text, tabsize=guess_tabwidth(text))
     blocks = simple_table_blocks(text)
-    best = list(sorted(blocks, reverse=True))
-    for score, start, end in best:
-        df = get_table(text, start, end)
-        if df.shape[1] == nattrib and len([x for x in df.columns if not x.startswith("Unnamed")]) == nattrib:
+    return [get_table(text, s, e) for _,s,e in blocks]
+
+def guess_column_names(f: Path, nattrib: int) -> List[str]:
+    tables = read_namefile(f, nattrib)
+    for t in tables:
+        if t.shape[1] == nattrib and len([x for x in t.columns if not x.startswith("Unnamed")]) == nattrib:
             # index in rows
-            return df.columns
-        elif df.shape[0] == nattrib and len(set(df.iloc[:,0].values)) == nattrib:
+            return t.columns
+        elif t.shape[0] == nattrib and len(set(t.iloc[:,0].values)) == nattrib:
             # index in columns
-            return df.iloc[:,0].values
+            return t.iloc[:,0].values
     raise Exception(f"Could not find a table with row or column size {nattrib} in {f}.")
 
 def load_csv_data(datadir: Path):

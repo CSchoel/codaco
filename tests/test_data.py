@@ -66,5 +66,5 @@ class TestUCImlr(unittest.TestCase):
         Test hypothesis: read_namefile fails to find attribute names in block formatted name file.
         """
         cd.download_ucimlr("abalone", self.data_dir)
-        nf = cd.read_namefile(Path(self.data_dir) / "abalone/abalone.names", nattrib=9)
+        nf = cd.guess_column_names(Path(self.data_dir) / "abalone/abalone.names", nattrib=9)
         print(nf)
