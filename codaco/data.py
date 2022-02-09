@@ -172,7 +172,7 @@ def guess_column_names(f: Path, nattrib: int=None) -> List[str]:
             return t.iloc[:,0].values
     raise Exception(f"Could not find a table with row or column size {nattrib} in {f}.")
 
-def load_csv_data(datadir: Path):
+def load_csv_data(datadir: Path) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
     """
     Finds all CSV formatted filed in datadir and loads them using pandas.
     """
@@ -191,7 +191,10 @@ def load_csv_data(datadir: Path):
             columns = guess_column_names(namefile, nattrib=nattrib)
             df = pd.read_csv(f, names=columns, on_bad_lines="warn")
         data[str(f.relative_to(datadir))] = df
-    return data
+    if len(data.keys()) == 1:
+        return list(data.values())[0]
+    else:
+        return data
 
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
     # exclude .data.html files
