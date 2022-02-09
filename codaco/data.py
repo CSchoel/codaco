@@ -177,6 +177,7 @@ def load_csv_data(datadir: Path):
     Finds all CSV formatted filed in datadir and loads them using pandas.
     """
     textfiles = [f for f in walk(datadir) if magic.from_file(f, mime=True) == 'text/plain']
+    data = {}
     for f in filter(lambda x: magic.from_file(x, mime=True) == "text/csv", walk(datadir)):
         # TODO handle non-utf8 files (maybe with chardet?)
         sniffer = csv.Sniffer()
@@ -189,8 +190,8 @@ def load_csv_data(datadir: Path):
             namefile = max(textfiles, key=lambda x: sum([ a == b for a,b in zip(str(x), str(f))]))
             columns = guess_column_names(namefile, nattrib=nattrib)
             df = pd.read_csv(f, names=columns, on_bad_lines="warn")
-        print(df)
-    return
+        data[str(f.relative_to(datadir))] = df
+    return data
 
     namefiles = [x for x in outdir.iterdir() if ".names" in x.suffixes]
     # exclude .data.html files
