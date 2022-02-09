@@ -8,7 +8,7 @@ import shutil
 
 class TestUCImlr(unittest.TestCase):
     def setUp(self):
-        self.data_dir = tempfile.mkdtemp()
+        self.data_dir = Path(tempfile.mkdtemp())
 
     def tearDown(self):
         shutil.rmtree(self.data_dir)
@@ -18,16 +18,16 @@ class TestUCImlr(unittest.TestCase):
         Test hypothesis: download_recursive fails to download content in subfolders
         """
         url = "https://archive.ics.uci.edu/ml/machine-learning-databases/mechanical-analysis/"
-        dlpath = Path(self.data_dir) / "mechanical-analysis"
+        dlpath = self.data_dir / "mechanical-analysis"
         downloaded = cd.download_recursive(url, outdir=dlpath, overwrite=True)
         expected =  {
-            Path(self.data_dir) / 'mechanical-analysis/older-version/mechanical-analysis.notused-instances',
-            Path(self.data_dir) / 'mechanical-analysis/older-version/mechanical-analysis.names',
-            Path(self.data_dir) / 'mechanical-analysis/older-version/mechanical-analysis.data',
-            Path(self.data_dir) / 'mechanical-analysis/older-version/Index',
-            Path(self.data_dir) / 'mechanical-analysis/PUMPS-DATA-SET/DISTRIBUTION.Z',
-            Path(self.data_dir) / 'mechanical-analysis/PUMPS-DATA-SET/Index',
-            Path(self.data_dir) / 'mechanical-analysis/Index'
+            self.data_dir / 'mechanical-analysis/older-version/mechanical-analysis.notused-instances',
+            self.data_dir / 'mechanical-analysis/older-version/mechanical-analysis.names',
+            self.data_dir / 'mechanical-analysis/older-version/mechanical-analysis.data',
+            self.data_dir / 'mechanical-analysis/older-version/Index',
+            self.data_dir / 'mechanical-analysis/PUMPS-DATA-SET/DISTRIBUTION.Z',
+            self.data_dir / 'mechanical-analysis/PUMPS-DATA-SET/Index',
+            self.data_dir / 'mechanical-analysis/Index'
         }
         self.assertEqual(expected, set(downloaded))
 
@@ -36,22 +36,22 @@ class TestUCImlr(unittest.TestCase):
         Test hypothesis: extract_recursive fails to extract archives that are contained within another archive
         """
         url = "https://archive.ics.uci.edu/ml/machine-learning-databases/UNIX_user_data-mld/"
-        dlpath = Path(self.data_dir) / "UNIX_user_data-mld"
+        dlpath = self.data_dir / "UNIX_user_data-mld"
         downloaded = cd.download_recursive(url, outdir=dlpath, overwrite=True)
         cd.extract_recursive(dlpath / "UNIX_user_data.tar.gz", outdir=dlpath)
         expected = {
-            Path(self.data_dir) / 'UNIX_user_data-mld/README',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data.html',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/README',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER0',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER1',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER2',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER3',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER4',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER5',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER6',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER7',
-            Path(self.data_dir) / 'UNIX_user_data-mld/UNIX_user_data/USER8'
+            self.data_dir / 'UNIX_user_data-mld/README',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data.html',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/README',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER0',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER1',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER2',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER3',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER4',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER5',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER6',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER7',
+            self.data_dir / 'UNIX_user_data-mld/UNIX_user_data/USER8'
         }
         self.assertEqual(expected, set(cd.walk(Path(self.data_dir) / "UNIX_user_data-mld")))
 
