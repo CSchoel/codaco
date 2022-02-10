@@ -63,6 +63,9 @@ class TestUCImlr(unittest.TestCase):
         """
         cd.download_ucimlr("abalone", self.data_dir)
         dat = cd.load_csv_data(self.data_dir / "abalone")
+        for k in dat:
+            print(k)
+            print(dat[k])
         print(list(cd.walk(self.data_dir)))
         if not isinstance(dat, pd.DataFrame):
             self.fail(f"Expected DataFrame, but got {type(dat)}")
