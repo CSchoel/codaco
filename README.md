@@ -14,6 +14,16 @@ With Codaco, I want to change this so that the workflow *with* data exploration 
 
 Currently, I am just playing around with Python, getting up to date on all the neat data science libraries out there.
 
+As a first working example, you can download the "abalone" database from the UCI machine learning database and view a histogram of the attributes with the following code:
+
+```python
+import codaco.data as cd
+import codaco.stat as cs
+
+data = cd.load_dataset("abalone", source="ucimlr")
+cs.inspect_attributes(data)
+```
+
 ## Why not Julia?
 
 I debated whether I should use Julia or Python for this project, but decided on Python just because there are more ML-libraries for Python and because I am more familiar with the quirks of the language.
