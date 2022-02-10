@@ -63,9 +63,6 @@ class TestUCImlr(unittest.TestCase):
         """
         cd.download_ucimlr("abalone", self.data_dir)
         dat = cd.load_csv_data(self.data_dir / "abalone")
-        import magic
-        for f in cd.walk(self.data_dir):
-            print(f, magic.from_file(f, mime=True))
         if not isinstance(dat, pd.DataFrame):
             self.fail(f"Expected DataFrame, but got {type(dat)}")
         cols = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight', 'Shucked weight', 'Viscera weight', 'Shell weight', 'Rings']
