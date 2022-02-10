@@ -1,0 +1,22 @@
+on:
+  push:
+    branches: ["main"]
+
+name: build
+
+jobs:
+  build-gradle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install requirements (PEP 517)
+        run: pip install .
+      - name: Install pytest-cov
+        run: pip install pytest-cov
+      - name: Run tests with coverage
+        run: python -m pytest tests --cov=codaco
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
