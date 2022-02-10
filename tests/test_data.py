@@ -63,7 +63,7 @@ class TestUCImlr(unittest.TestCase):
         """
         cd.download_ucimlr("abalone", self.data_dir)
         dat = cd.load_csv_data(self.data_dir / "abalone")
-        print(cd.walk(self.data_dir))
+        print(list(cd.walk(self.data_dir)))
         if not isinstance(dat, pd.DataFrame):
             self.fail(f"Expected DataFrame, but got {type(dat)}")
         cols = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight', 'Shucked weight', 'Viscera weight', 'Shell weight', 'Rings']
