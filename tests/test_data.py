@@ -80,3 +80,10 @@ class TestUCImlr(unittest.TestCase):
         nf = cd.guess_column_names(Path(self.data_dir) / "abalone/abalone.names", nattrib=9)
         cols = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight', 'Shucked weight', 'Viscera weight', 'Shell weight', 'Rings']
         self.assertEqual(cols, list(nf))
+
+    def test_load_dataset(self):
+        """
+        Test hypothesis: load_dataset is unable to load a simple UCIMLR dataset
+        that must be downloaded before it can be used.
+        """
+        data = cd.load_dataset("abalone", source="ucimlr", download_to=self.data_dir)

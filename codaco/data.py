@@ -45,7 +45,8 @@ def load_dataset(identifier, source="file", download_to="datasets", force_downlo
         return load_file(Path(identifier))
     elif source == "ucimlr":
         download_ucimlr(identifier, outdir=download_to, overwrite=force_download)
-        return [] # TODO implement data loading
+        data = load_csv_data(Path(download_to) / "abalone")
+        return data
     else:
         raise IOError("Unknown dataset source: {}".format(source))
 
