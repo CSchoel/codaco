@@ -179,7 +179,7 @@ def load_csv_data(datadir: Path) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]
     """
     textfiles = [f for f in walk(datadir) if magic.from_file(f, mime=True) == 'text/plain']
     data = {}
-    for f in filter(lambda x: magic.from_file(x, mime=True) == "text/csv", walk(datadir)):
+    for f in filter(lambda x: magic.from_file(x, mime=True) in ["text/csv", "application/csv"], walk(datadir)):
         # TODO handle non-utf8 files (maybe with chardet?)
         sniffer = csv.Sniffer()
         head = sniffer.has_header(f.read_text("utf-8"))
