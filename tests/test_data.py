@@ -87,3 +87,8 @@ class TestUCImlr(unittest.TestCase):
         that must be downloaded before it can be used.
         """
         data = cd.load_dataset("abalone", source="ucimlr", download_to=self.data_dir)
+        if not isinstance(data, pd.DataFrame):
+            self.fail(f"Expected DataFrame, but got {type(data)}")
+        cols = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight', 'Shucked weight', 'Viscera weight', 'Shell weight', 'Rings']
+        self.assertEqual(cols, list(data.columns))
+        self.assertEqual((4177, 9), data.shape)
