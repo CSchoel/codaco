@@ -71,7 +71,6 @@ class TestUCImlr(unittest.TestCase):
         last = ['M', 0.71, 0.555, 0.195, 1.9485, 0.9455, 0.3765, 0.495, 12]
         self.assertEqual(first, list(dat.iloc[0,:].values))
         self.assertEqual(last, list(dat.iloc[-1,:].values))
-        cs.inspect_attributes(dat)
 
     def test_guess_column_names(self):
         """
