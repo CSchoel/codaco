@@ -15,7 +15,8 @@ jobs:
         with:
           python-version: 3.x
       - name: Build package (PEP 517)
-        run: pip install .
+        run: pip install build
+      - run: python -m build
       - uses: CSchoel/release-notes-from-changelog@v1
       - name: Create Release using GitHub CLI
         env:
@@ -26,4 +27,4 @@ jobs:
           -F RELEASE.md
           -t "Version $RELEASE_VERSION"
           ${GITHUB_REF#refs/*/}
-          dist/*.whl
+          dist/codaco-*.whl
