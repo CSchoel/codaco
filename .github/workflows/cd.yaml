@@ -1,0 +1,28 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: create release
+
+jobs:
+  build:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Build package (PEP 517)
+        run: pip install .
+      - uses: CSchoel/release-notes-from-changelog@v1
+      - name: Create Release using GitHub CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release create
+          -d
+          -F RELEASE.md
+          -t "Version $RELEASE_VERSION"
+          dist/*.whl
