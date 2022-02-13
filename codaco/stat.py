@@ -3,14 +3,18 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import shapiro, probplot, jarque_bera
+from scipy.stats import shapiro, probplot, jarque_bera, zscore
 from typing import *
 
 def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     df.hist(bins=30)
     print(sorted(df.filter(items=["Height"]).values))
-    # 1. check numeric columns for normality with shapiro-wilk or jarque-bera ...
+    # 1. Choose only numeric columns
     numeric = df.filter(items=[c for c,d in zip(df.columns, df.dtypes) if d.kind in ['i', 'f']])
+    # 2. Search for outliers
+    outliers = df[df.apply(zscore) > 3]
+    print(outliers)
+    # 1. check numeric columns for normality with shapiro-wilk or jarque-bera ...
     # NOTE shapiro-wilk will also reject very small deviations for large N (> 5000)
     # NOTE jarque-bera needs sample sizes > 2000
     if df.shape[0] > 2000:
