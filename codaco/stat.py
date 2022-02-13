@@ -12,7 +12,7 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     # 1. Choose only numeric columns
     numeric = df.filter(items=[c for c,d in zip(df.columns, df.dtypes) if d.kind in ['i', 'f']])
     # 2. Search for outliers
-    outliers = df[df.apply(zscore) > 3]
+    outliers = numeric[numeric.apply(zscore) > 3]
     print(outliers)
     # 1. check numeric columns for normality with shapiro-wilk or jarque-bera ...
     # NOTE shapiro-wilk will also reject very small deviations for large N (> 5000)
