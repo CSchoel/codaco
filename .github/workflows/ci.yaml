@@ -17,6 +17,6 @@ jobs:
       - name: Install pytest-cov
         run: pip install pytest-cov
       - name: Run tests with coverage
-        run: python -m pytest tests --cov=codaco
+        run: python -m pytest tests --cov=codaco --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
