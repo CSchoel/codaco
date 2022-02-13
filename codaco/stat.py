@@ -13,6 +13,10 @@ def inspect_attributes(df: pd.DataFrame):
     print(normality)
     plt.show()
     plt.close()
-    probplot(numeric)
+    plt.figure()
+    w = int(np.ceil(np.sqrt(len(numeric.columns))))
+    for i, (c, d) in enumerate(numeric.items()):
+        ax = plt.subplot(w, w, i + 1)
+        probplot(d, plot=ax)
     plt.show()
     plt.close()
