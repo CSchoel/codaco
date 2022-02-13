@@ -12,7 +12,7 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     # 2. Search for outliers (> 3σ)
     index = numeric.apply(lambda x: np.abs(zscore(x))) > 3
     outliers = numeric[index][[np.any(r) for i,r in index.iterrows()]]
-    # 3. Remove outliers
+    # 3. Remove outliers (since all normality tests are extremely sensitive to them)
     pruned = numeric.drop(index=outliers.index)
     # 4. check numeric columns for normality with shapiro-wilk or jarque-bera ...
     # NOTE shapiro-wilk will also reject very small deviations for large N (> 5000)
@@ -28,6 +28,9 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     qqrcol = pd.DataFrame({ 'qqr' : [qqr for (_, _), (_, _, qqr) in qqdata] }, index=normality.index)
     normality = normality.join(qqrcol)
     # 2. Assess normality based on SW and QQ parameters
+    maybenormal = (normality['p-value'] > 0.05) | (normality["qqr"] > 0.99)
+    normalcol = pd.DataFrame({ 'distribution': [("normal" if n else "other") for n in maybenormal.values]}, index=normality.index)
+    normality = normality.join(normalcol)
     print(normality)
     # pruned.hist(bins=30)
     # plt.show()
