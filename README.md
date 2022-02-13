@@ -1,5 +1,8 @@
 # Complete Data Count (Codaco)
 
+[![build](https://github.com/CSchoel/codaco/actions/workflows/ci.yaml/badge.svg)](https://github.com/CSchoel/codaco/actions/workflows/ci.yaml)
+[![codecov](https://codecov.io/gh/CSchoel/codaco/branch/main/graph/badge.svg?token=0092A8I7WF)](https://codecov.io/gh/CSchoel/codaco)
+
 Codaco ~~is~~ will maybe one day be a data science library for exploring unknown datasets.
 The name is inspired by the "complete blood count" used to screen for diseases.
 
