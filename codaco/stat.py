@@ -8,7 +8,6 @@ from typing import *
 
 def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     df.hist(bins=30)
-    print(sorted(df.filter(items=["Height"]).values))
     # 1. Choose only numeric columns
     numeric = df.filter(items=[c for c,d in zip(df.columns, df.dtypes) if d.kind in ['i', 'f']])
     # 2. Search for outliers
