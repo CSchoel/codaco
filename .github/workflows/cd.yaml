@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - name: Build package (PEP 517)
+      - name: Install pep517 build system
         run: pip install build
       - run: python -m build
       - uses: CSchoel/release-notes-from-changelog@v1
