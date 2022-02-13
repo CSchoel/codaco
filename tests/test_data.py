@@ -92,3 +92,9 @@ class TestUCImlr(unittest.TestCase):
         cols = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight', 'Shucked weight', 'Viscera weight', 'Shell weight', 'Rings']
         self.assertEqual(cols, list(data.columns))
         self.assertEqual((4177, 9), data.shape)
+
+    def test_inspect_attributes(self):
+        data = cd.load_dataset("abalone", source="ucimlr", download_to=self.data_dir)
+        if not isinstance(data, pd.DataFrame):
+            self.fail(f"Expected DataFrame, but got {type(data)}")
+        cs.inspect_attributes(data)
