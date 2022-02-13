@@ -23,7 +23,7 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
         normality = pruned.apply(lambda x: pd.Series(shapiro(x), index=["statistic", "p-value"])).T
     # ... and with QQ-plot
     qqdata = []
-    for _, d in numeric.items():
+    for _, d in pruned.items():
         qqdata.append(probplot(d, fit=True))
     qqrcol = pd.DataFrame({ 'qqr' : [qqr for (_, _), (_, _, qqr) in qqdata] }, index=normality.index)
     normality = normality.join(qqrcol)
