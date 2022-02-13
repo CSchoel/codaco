@@ -97,4 +97,5 @@ class TestUCImlr(unittest.TestCase):
         data = cd.load_dataset("abalone", source="ucimlr", download_to=self.data_dir)
         if not isinstance(data, pd.DataFrame):
             self.fail(f"Expected DataFrame, but got {type(data)}")
-        cs.inspect_attributes(data)
+        outliers, normality = cs.inspect_attributes(data)
+        # TODO actually perfom some tests beyond error-free execution

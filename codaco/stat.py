@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import shapiro, probplot, jarque_bera, zscore
 from typing import *
 
-def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
+def inspect_attributes(df: pd.DataFrame, plot=True, plot_dir="plots") -> Tuple[pd.DataFrame, pd.DataFrame]:
     # 1. Choose only numeric columns
     numeric = df.filter(items=[c for c,d in zip(df.columns, df.dtypes) if d.kind in ['i', 'f']])
     # 2. Search for outliers (> 3σ)
@@ -31,7 +31,8 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     maybenormal = (normality['p-value'] > 0.05) | (normality["qqr"] > 0.99)
     normalcol = pd.DataFrame({ 'distribution': [("normal" if n else "other") for n in maybenormal.values]}, index=normality.index)
     normality = normality.join(normalcol)
-    print(normality)
+    # TODO check for uniform distributions
+    # TODO plot
     # pruned.hist(bins=30)
     # plt.show()
     # plt.close()
@@ -42,4 +43,4 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     #     (osm, osr), (slope, intercept, r) = probplot(d, fit=True)
     # plt.show()
     # plt.close()
-    return outliers
+    return outliers, normality
