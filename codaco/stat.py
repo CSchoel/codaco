@@ -25,12 +25,13 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     qqdata = []
     for _, d in numeric.items():
         qqdata.append(probplot(d, fit=True))
-    normality = normality.join(pd.DataFrame({ 'qqr' : [qqr for (_, _), (_, _, qqr) in qqdata] }))
+    qqrcol = pd.DataFrame({ 'qqr' : [qqr for (_, _), (_, _, qqr) in qqdata] }, index=normality.index)
+    normality = normality.join(qqrcol)
     # 2. Assess normality based on SW and QQ parameters
-    print(normality.T)
-    pruned.hist(bins=30)
-    plt.show()
-    plt.close()
+    print(normality)
+    # pruned.hist(bins=30)
+    # plt.show()
+    # plt.close()
     # plt.figure()
     # w = int(np.ceil(np.sqrt(len(numeric.columns))))
     # for i, (c, d) in enumerate(numeric.items()):
