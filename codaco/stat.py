@@ -10,11 +10,12 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     df.hist(bins=30)
     # 1. Choose only numeric columns
     numeric = df.filter(items=[c for c,d in zip(df.columns, df.dtypes) if d.kind in ['i', 'f']])
-    # 2. Search for outliers
+    # 2. Search for outliers (> 3σ)
     index = numeric.apply(lambda x: np.abs(zscore(x))) > 3
-    outliers = numeric[[np.any(r) for i,r in index.iterrows()]]
-    print(outliers)
-    # 1. check numeric columns for normality with shapiro-wilk or jarque-bera ...
+    outliers = numeric[index][[np.any(r) for i,r in index.iterrows()]]
+    # 3. Remove outliers
+    pruned = numeric.drop(index=outliers.index)
+    # 4. check numeric columns for normality with shapiro-wilk or jarque-bera ...
     # NOTE shapiro-wilk will also reject very small deviations for large N (> 5000)
     # NOTE jarque-bera needs sample sizes > 2000
     if df.shape[0] > 2000:
@@ -37,3 +38,4 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     #     (osm, osr), (slope, intercept, r) = probplot(d, fit=True)
     # plt.show()
     # plt.close()
+    return outliers
