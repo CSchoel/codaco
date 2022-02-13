@@ -19,9 +19,9 @@ def inspect_attributes(df: pd.DataFrame, plot=True) -> pd.DataFrame:
     # NOTE shapiro-wilk will also reject very small deviations for large N (> 5000)
     # NOTE jarque-bera needs sample sizes > 2000
     if df.shape[0] > 2000:
-        normality = numeric.apply(lambda x: pd.Series(jarque_bera(x), index=["statistic", "p-value"]))
+        normality = pruned.apply(lambda x: pd.Series(jarque_bera(x), index=["statistic", "p-value"]))
     else:
-        normality = numeric.apply(lambda x: pd.Series(shapiro(x), index=["statistic", "p-value"]))
+        normality = pruned.apply(lambda x: pd.Series(shapiro(x), index=["statistic", "p-value"]))
     # ... and with QQ-plot
     qqdata = []
     for _, d in numeric.items():
