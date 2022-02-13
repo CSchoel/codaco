@@ -27,7 +27,7 @@ def inspect_attributes(df: pd.DataFrame, plot=True, plot_dir="plots") -> Tuple[p
         qqdata.append(probplot(d, fit=True))
     qqrcol = pd.DataFrame({ 'qqr' : [qqr for (_, _), (_, _, qqr) in qqdata] }, index=normality.index)
     normality = normality.join(qqrcol)
-    # 2. Assess normality based on SW and QQ parameters
+    # 5. Assess normality based on SW and QQ parameters
     maybenormal = (normality['p-value'] > 0.05) | (normality["qqr"] > 0.99)
     normalcol = pd.DataFrame({ 'distribution': [("normal" if n else "other") for n in maybenormal.values]}, index=normality.index)
     normality = normality.join(normalcol)
